@@ -377,6 +377,21 @@ section{
 section:hover{
   z-index: 5;          /* die Section unter der Maus kommt nach vorne */
   }
+
+      /* ===== ANDROID FIX: nested .split Grid darf schrumpfen ===== */
+  .split{
+    min-width: 0;
+    width: 100%;
+  }
+
+  .split > .subpanel{
+    min-width: 0;   /* entscheidend gegen "rechts raus" in Android */
+    max-width: 100%;
+  }
+
+  .subpanel{
+    max-width: 100%;
+  }
 </style>
 </head>
 
@@ -1431,6 +1446,7 @@ section:hover{
   </script>
 </body>
 </html>
+
 
 
 
