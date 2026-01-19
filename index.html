@@ -1399,6 +1399,8 @@ if(clearBtn && search){
 
     let activeCat = tabMap[rawTab] || 'all';
     if (activeCat === 'mod' && !showMods) activeCat = 'core';
+    let lastNonSearchCat = activeCat;  // merkt sich den letzten Tab, bevor gesucht wurde
+    let searchMode = false;           // sind wir gerade im Suchmodus?
 
     if (showMods && modTabBtn) modTabBtn.style.display = '';
 
@@ -1577,6 +1579,7 @@ if(clearBtn && search){
   </script>
 </body>
 </html>
+
 
 
 
