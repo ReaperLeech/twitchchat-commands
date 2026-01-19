@@ -124,24 +124,6 @@
     align-items: start;
   }
 
-    /* ✅ PATCH gegen "nach rechts explodieren" */
-.split > .subpanel{
-  min-width: 0;
-}
-
-/* ✅ DESKTOP PATCH: Stream Avatars Panels etwas breiter (gegen abgeschnittenen Text) */
-@media (min-width: 720px){
-  section[data-cat="games"] .split{
-    grid-template-columns: 1.2fr 1fr;
-  }
-}
-
-@media (min-width: 1024px){
-  section[data-cat="games"] .split{
-    grid-template-columns: 1.35fr 1fr;
-  }
-}
-
   .subpanel{
     border: 1px solid rgba(255,255,255,.14);
     border-radius: 12px;
