@@ -1536,7 +1536,14 @@ if(clearBtn && search){
       });
     });
 
-    search?.addEventListener('input', applyFilter);
+    search?.addEventListener('input', () => {
+  // Wenn man sucht -> automatisch auf "Alle" wechseln (damit wirklich alles durchsucht wird)
+  if (search.value.trim() !== '' && activeCat !== 'all'){
+    activeCat = 'all';
+    syncActiveButton();   // Tab-Button optisch korrekt aktiv setzen
+  }
+  applyFilter();
+});
 
     // Copy Buttons
     document.addEventListener('click', async (e) => {
@@ -1570,6 +1577,7 @@ if(clearBtn && search){
   </script>
 </body>
 </html>
+
 
 
 
