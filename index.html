@@ -377,6 +377,26 @@ section{
 section:hover{
   z-index: 5;          /* die Section unter der Maus kommt nach vorne */
   }
+
+    /* ===== Clear-Button (X) in Search ===== */
+.search{
+  position: relative;
+}
+
+#clearSearch{
+  display: none;              /* erscheint nur wenn Text drin ist */
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: rgba(255,255,255,.85);
+  font-size: 18px;
+  line-height: 1;
+  padding: 0 6px;
+}
+
+#clearSearch:hover{
+  color: #fff;
+}
 </style>
 </head>
 
@@ -403,9 +423,10 @@ section:hover{
         </div>
 
         <div class="search">
-          <span style="opacity:.85;">🔎</span>
-          <input id="search" type="text" placeholder="Commands filtern… z.B. followage, hug, death, #pullup" />
-        </div>
+            <span style="opacity:.85;">🔎</span>
+            <input id="search" type="text" placeholder="Commands filtern… z.B. followage, hug, death, #pullup" />
+            <button id="clearSearch" type="button" aria-label="Suche leeren">✕</button>
+            </div>
 
         <div class="filters" id="filters">
           <button class="fbtn" data-filter="all">Alle</button>
@@ -1349,12 +1370,34 @@ section:hover{
     // =====================
     // 2) ELEMENTS
     // =====================
-    const search = document.getElementById('search');
-    const items  = Array.from(document.querySelectorAll('.cmd'));
-    const empty  = document.getElementById('empty');
-    const filterBtns = Array.from(document.querySelectorAll('.fbtn'));
-    const sections = Array.from(document.querySelectorAll('section[data-cat]'));
-    const modTabBtn = document.getElementById('modTabBtn');
+const search = document.getElementById('search');
+
+// Clear Button (X) für Search
+const clearBtn = document.getElementById('clearSearch');
+
+const items  = Array.from(document.querySelectorAll('.cmd'));
+const empty  = document.getElementById('empty');
+const filterBtns = Array.from(document.querySelectorAll('.fbtn'));
+const sections = Array.from(document.querySelectorAll('section[data-cat]'));
+const modTabBtn = document.getElementById('modTabBtn');
+
+// X-Button nur anzeigen wenn Text drin ist + Klick leert Suche
+function updateClearButton(){
+  if(!clearBtn) return;
+  clearBtn.style.display = (search && search.value.trim()) ? "inline-flex" : "none";
+}
+
+if(clearBtn && search){
+  clearBtn.addEventListener("click", () => {
+    search.value = "";
+    search.focus();
+    updateClearButton();
+    applyFilter(); // zeigt wieder alles an
+  });
+
+  search.addEventListener("input", updateClearButton);
+  updateClearButton();
+}
 
     let activeCat = tabMap[rawTab] || 'core';
     if (activeCat === 'mod' && !showMods) activeCat = 'core';
@@ -1486,5 +1529,6 @@ section:hover{
   </script>
 </body>
 </html>
+
 
 
