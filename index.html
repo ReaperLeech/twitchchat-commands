@@ -1534,16 +1534,36 @@ if(clearBtn && search){
         filterBtns.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         activeCat = target;
+        // merken, wo der User ist (aber nur wenn nicht gerade Suchmodus aktiv)
+        if (!searchMode) lastNonSearchCat = activeCat;
         applyFilter();
       });
     });
 
     search?.addEventListener('input', () => {
-  // Wenn man sucht -> automatisch auf "Alle" wechseln (damit wirklich alles durchsucht wird)
-  if (search.value.trim() !== '' && activeCat !== 'all'){
-    activeCat = 'all';
-    syncActiveButton();   // Tab-Button optisch korrekt aktiv setzen
+  const hasQuery = search.value.trim() !== '';
+
+  // Start Search-Mode: merken wo der User war + auf "all" wechseln
+  if (hasQuery && !searchMode){
+    searchMode = true;
+    lastNonSearchCat = activeCat;
+
+    if (activeCat !== 'all'){
+      activeCat = 'all';
+      syncActiveButton();
+    }
   }
+
+  // End Search-Mode: zurück zum letzten Tab
+  if (!hasQuery && searchMode){
+    searchMode = false;
+
+    activeCat = lastNonSearchCat;
+    if (activeCat === 'mod' && !showMods) activeCat = 'core';
+
+    syncActiveButton();
+  }
+
   applyFilter();
 });
 
@@ -1579,6 +1599,7 @@ if(clearBtn && search){
   </script>
 </body>
 </html>
+
 
 
 
