@@ -124,6 +124,11 @@
     align-items: start;
   }
 
+    /* ✅ PATCH gegen "nach rechts explodieren" */
+  .split > .subpanel{
+  min-width: 0;
+  }
+
   .subpanel{
     border: 1px solid rgba(255,255,255,.14);
     border-radius: 12px;
@@ -1482,7 +1487,7 @@ if(clearBtn && search){
   updateClearButton();
 }
 
-    let activeCat = tabMap[rawTab] || 'all';
+    let activeCat = tabMap[rawTab] || 'core';
     if (activeCat === 'mod' && !showMods) activeCat = 'core';
     let lastNonSearchCat = activeCat;  // merkt sich den letzten Tab, bevor gesucht wurde
     let searchMode = false;           // sind wir gerade im Suchmodus?
