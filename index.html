@@ -902,22 +902,22 @@ section:hover{
           <div class="cmd-left"><div class="cmd-code">!shop</div><div class="cmd-desc">Shop öffnen/anzeigen.</div></div>
           <button class="copy" data-copy="!shop">Kopieren</button>
         </li>
+
+        <li class="cmd" data-text="!attack user">
+        <div class="cmd-left"><div class="cmd-code">!attack &lt;user&gt;</div><div class="cmd-desc">Greift einen User an (nur wenn Combat aktiv ist).</div></div>
+        <button class="copy" data-copy="!attack ">Kopieren</button>
+      </li>
+
+      <li class="cmd" data-text="!sling winkel power">
+        <div class="cmd-left"><div class="cmd-code">!sling &lt;winkel&gt; [power]</div><div class="cmd-desc">Schleudert (z.B. <b>!sling -75 100</b>) – nur wenn aktiv.</div></div>
+        <button class="copy" data-copy="!sling ">Kopieren</button>
+      </li>
       </ul>
     </div>
 
     <div class="subpanel">
       <h3 style="margin-top:0;">💥 Fun / Social / Actions</h3>
       <ul>
-        <li class="cmd" data-text="!background background">
-          <div class="cmd-left"><div class="cmd-code">!background</div><div class="cmd-desc">Hintergrund anzeigen/ändern (je nach Setup).</div></div>
-          <button class="copy" data-copy="!background">Kopieren</button>
-        </li>
-
-        <li class="cmd" data-text="!background none">
-          <div class="cmd-left"><div class="cmd-code">!background none</div><div class="cmd-desc">Hintergrund entfernen.</div></div>
-          <button class="copy" data-copy="!background none">Kopieren</button>
-        </li>
-
         <li class="cmd" data-text="!bomb bomb">
           <div class="cmd-left"><div class="cmd-code">!bomb</div><div class="cmd-desc">Bomb-Event (je nach Setup).</div></div>
           <button class="copy" data-copy="!bomb">Kopieren</button>
@@ -1229,6 +1229,16 @@ section:hover{
         <div class="cmd-left"><div class="cmd-code">!leaderboard exclude &lt;user&gt;</div><div class="cmd-desc">Schließt User vom Leaderboard aus.</div></div>
         <button class="copy" data-copy="!leaderboard exclude ">Kopieren</button>
       </li>
+
+      <li class="cmd" data-text="!background background">
+          <div class="cmd-left"><div class="cmd-code">!background</div><div class="cmd-desc">Hintergrund anzeigen/ändern (je nach Setup).</div></div>
+          <button class="copy" data-copy="!background">Kopieren</button>
+        </li>
+
+        <li class="cmd" data-text="!background none">
+          <div class="cmd-left"><div class="cmd-code">!background none</div><div class="cmd-desc">Hintergrund entfernen.</div></div>
+          <button class="copy" data-copy="!background none">Kopieren</button>
+        </li>
     </ul>
   </div>
 
@@ -1293,17 +1303,7 @@ section:hover{
       <li class="cmd" data-text="!spawn name">
         <div class="cmd-left"><div class="cmd-code">!spawn &lt;name&gt;</div><div class="cmd-desc">Spawnt ein Objekt/Setup (z.B. <b>!spawn game</b> wenn vorhanden).</div></div>
         <button class="copy" data-copy="!spawn ">Kopieren</button>
-      </li>
-
-      <li class="cmd" data-text="!attack user">
-        <div class="cmd-left"><div class="cmd-code">!attack &lt;user&gt;</div><div class="cmd-desc">Greift einen User an (nur wenn Combat aktiv ist).</div></div>
-        <button class="copy" data-copy="!attack ">Kopieren</button>
-      </li>
-
-      <li class="cmd" data-text="!sling winkel power">
-        <div class="cmd-left"><div class="cmd-code">!sling &lt;winkel&gt; [power]</div><div class="cmd-desc">Schleudert (z.B. <b>!sling -75 100</b>) – nur wenn aktiv.</div></div>
-        <button class="copy" data-copy="!sling ">Kopieren</button>
-      </li>
+      </li>      
     </ul>
   </div>
 </div>
@@ -1481,6 +1481,7 @@ section:hover{
   </script>
 </body>
 </html>
+
 
 
 
