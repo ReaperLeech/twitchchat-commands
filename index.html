@@ -55,14 +55,15 @@
   }
 
   .panel{
-    width: min(1100px, 100%);
-    background: var(--panel);
-    border: 1px solid var(--panel-border);
-    border-radius: 14px;
-    padding: 18px 18px 22px;
-    box-shadow: 0 10px 30px rgba(0,0,0,.35);
-    backdrop-filter: blur(3px);
-  }
+  width: min(1400px, calc(100vw - 28px));
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 14px;
+  padding: 18px 18px 22px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+  backdrop-filter: blur(3px);
+  overflow-x: hidden;
+}
 
   /* ===== Header (zentriert, ohne Titeltext) ===== */
   header{
@@ -1606,6 +1607,7 @@ if(clearBtn && search){
   </script>
 </body>
 </html>
+
 
 
 
