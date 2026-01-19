@@ -1447,17 +1447,38 @@ if(clearBtn && search){
   const q = (search?.value || '').trim().toLowerCase();
   let visible = 0;
 
+  // 1) Match-Flag pro Command setzen
   items.forEach(li => {
     const hay =
       (li.getAttribute('data-text') || '').toLowerCase()
       + ' ' + (li.querySelector('.cmd-code')?.textContent || '').toLowerCase()
       + ' ' + (li.querySelector('.cmd-desc')?.textContent || '').toLowerCase();
+
     li.dataset.matchText = (q === '' || hay.includes(q)) ? '1' : '0';
   });
+
+  // Helper: leere ULs + deren H3 verstecken
+  function cleanupListsAndHeadings(sec){
+    const uls = Array.from(sec.querySelectorAll('ul'));
+    uls.forEach(ul => {
+      const hasVisibleCmd = Array.from(ul.querySelectorAll('li.cmd'))
+        .some(li => li.style.display !== 'none');
+
+      // UL aus/ein
+      ul.style.display = hasVisibleCmd ? '' : 'none';
+
+      // Falls direkt davor ein H3 steht -> ebenfalls aus/ein
+      const prev = ul.previousElementSibling;
+      if (prev && prev.tagName === 'H3'){
+        prev.style.display = hasVisibleCmd ? '' : 'none';
+      }
+    });
+  }
 
   sections.forEach(sec => {
     const cat = sec.getAttribute('data-cat');
 
+    // Secret-Sections nur bei ?mod=1
     if (isSecretSection(sec) && !showMods){
       sec.style.display = 'none';
       Array.from(sec.querySelectorAll('.cmd')).forEach(li => li.style.display = 'none');
@@ -1466,6 +1487,7 @@ if(clearBtn && search){
 
     const catOk = (activeCat === 'all' || cat === activeCat);
 
+    // 2) Commands innerhalb der Section anzeigen/ausblenden
     const secItems = Array.from(sec.querySelectorAll('.cmd'));
     let secHasVisible = false;
 
@@ -1475,24 +1497,27 @@ if(clearBtn && search){
       if (show){ secHasVisible = true; visible++; }
     });
 
-    // Section nur anzeigen, wenn darin Commands sichtbar sind
+    // 3) Ganze Section nur anzeigen wenn mind. 1 Command sichtbar
     sec.style.display = secHasVisible ? '' : 'none';
 
-    // ===== FIX: leere Subpanels/Kacheln innerhalb einer Section verstecken =====
+    // 4) Wenn Section sichtbar: leere Subpanels (Split-Kacheln) verstecken
     if (sec.style.display !== 'none'){
       const subpanels = Array.from(sec.querySelectorAll('.subpanel'));
       subpanels.forEach(sp => {
-        const cmds = Array.from(sp.querySelectorAll('.cmd'));
-        const hasVisibleCmd = cmds.some(li => li.style.display !== 'none');
+        const hasVisibleCmd = Array.from(sp.querySelectorAll('.cmd'))
+          .some(li => li.style.display !== 'none');
         sp.style.display = hasVisibleCmd ? '' : 'none';
       });
 
-      // Wenn ein .split Container keine sichtbaren Subpanels mehr hat -> ausblenden
+      // Split-Container verstecken, wenn keine Subpanels mehr sichtbar sind
       Array.from(sec.querySelectorAll('.split')).forEach(split => {
         const visibleSub = Array.from(split.querySelectorAll(':scope > .subpanel'))
           .some(sp => sp.style.display !== 'none');
         split.style.display = visibleSub ? '' : 'none';
       });
+
+      // 5) Wichtig: Leere H3/UL-Gruppen innerhalb der Section verstecken
+      cleanupListsAndHeadings(sec);
     }
   });
 
@@ -1545,6 +1570,7 @@ if(clearBtn && search){
   </script>
 </body>
 </html>
+
 
 
 
