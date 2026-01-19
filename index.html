@@ -1387,11 +1387,18 @@ function updateClearButton(){
 
 if(clearBtn && search){
   clearBtn.addEventListener("click", () => {
-    search.value = "";
-    search.focus();
-    updateClearButton();
-    applyFilter(); // zeigt wieder alles an
-  });
+  search.value = "";
+  search.focus();
+  updateClearButton();
+
+  // ✅ Suchmodus sauber beenden + zurück zum vorherigen Tab
+  searchMode = false;
+  activeCat = lastNonSearchCat;
+  if (activeCat === 'mod' && !showMods) activeCat = 'core';
+  syncActiveButton();
+
+  applyFilter(); // zeigt wieder alles an
+});
 
   search.addEventListener("input", updateClearButton);
   updateClearButton();
@@ -1599,6 +1606,7 @@ if(clearBtn && search){
   </script>
 </body>
 </html>
+
 
 
 
