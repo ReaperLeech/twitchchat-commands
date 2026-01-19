@@ -873,24 +873,14 @@ section:hover{
     <div class="subpanel">
       <h3 style="margin-top:0;">🎮 Minigames / Currency</h3>
       <ul>
-        <li class="cmd" data-text="!basketball basketball">
-          <div class="cmd-left"><div class="cmd-code">!basketball</div><div class="cmd-desc">Basketball-Game (wenn aktiv).</div></div>
-          <button class="copy" data-copy="!basketball">Kopieren</button>
-        </li>
-
         <li class="cmd" data-text="!bet wetten betten">
           <div class="cmd-left"><div class="cmd-code">!bet</div><div class="cmd-desc">Wett-Optionen anzeigen.</div></div>
           <button class="copy" data-copy="!bet">Kopieren</button>
         </li>
 
-        <li class="cmd" data-text="!bet rot">
-          <div class="cmd-left"><div class="cmd-code">!bet &lt;betrag&gt; rot</div><div class="cmd-desc">Auf rot wetten.</div></div>
+        <li class="cmd" data-text="!bet rot/schwarz">
+          <div class="cmd-left"><div class="cmd-code">!bet &lt;betrag&gt; rot/schwarz</div><div class="cmd-desc">Auf rot oder schwarz wetten. (Roulette muss von Mod gestartet werden)</div></div>
           <button class="copy" data-copy="!bet ">Kopieren</button>
-        </li>
-
-        <li class="cmd" data-text="!boss boss">
-          <div class="cmd-left"><div class="cmd-code">!boss</div><div class="cmd-desc">Boss-Event starten (wenn aktiv).</div></div>
-          <button class="copy" data-copy="!boss">Kopieren</button>
         </li>
 
         <li class="cmd" data-text="!zeni currency geld">
@@ -1250,11 +1240,26 @@ section:hover{
         <button class="copy" data-copy="!boss ">Kopieren</button>
       </li>
 
+      <li class="cmd" data-text="!boss boss">
+          <div class="cmd-left"><div class="cmd-code">!boss</div><div class="cmd-desc">Boss-Event starten (wenn aktiv).</div></div>
+          <button class="copy" data-copy="!boss">Kopieren</button>
+        </li>
+
       <li class="cmd" data-text="!boss abbrechen cancel stop">
         <div class="cmd-left"><div class="cmd-code">!boss abbrechen</div><div class="cmd-desc">Stoppt/abbricht einen laufenden Bossfight.</div></div>
         <button class="copy" data-copy="!boss abbrechen">Kopieren</button>
       </li>
 
+      <li class="cmd" data-text="!br battle royale starten">
+        <div class="cmd-left"><div class="cmd-code">!br</div><div class="cmd-desc">Startet ein Battle Royale.</div></div>
+        <button class="copy" data-copy="!br">Kopieren</button>
+      </li>
+
+      <li class="cmd" data-text="!br abbrechen cancel stop">
+        <div class="cmd-left"><div class="cmd-code">!br abbrechen</div><div class="cmd-desc">Stoppt ein laufendes Battle Royale.</div></div>
+        <button class="copy" data-copy="!br abbrechen">Kopieren</button>
+      </li>
+      
       <li class="cmd" data-text="!explode user">
         <div class="cmd-left"><div class="cmd-code">!explode &lt;user&gt;</div><div class="cmd-desc">Lässt einen User explodieren (Mod-Action).</div></div>
         <button class="copy" data-copy="!explode ">Kopieren</button>
@@ -1269,6 +1274,16 @@ section:hover{
         <div class="cmd-left"><div class="cmd-code">!freeze &lt;user&gt; &lt;sek&gt;</div><div class="cmd-desc">Freezt einen User für X Sekunden (z.B. <b>!freeze clonzeh 60</b>).</div></div>
         <button class="copy" data-copy="!freeze ">Kopieren</button>
       </li>
+
+      <li class="cmd" data-text="!basketball basketball">
+          <div class="cmd-left"><div class="cmd-code">!basketball</div><div class="cmd-desc">Startet Basketball-Game (wenn aktiv).</div></div>
+          <button class="copy" data-copy="!basketball">Kopieren</button>
+        </li>
+
+      <li class="cmd" data-text="!bet rot/schwarz">
+          <div class="cmd-left"><div class="cmd-code">!bet &lt;betrag&gt; rot/schwarz</div><div class="cmd-desc">Auf rot oder schwarz wetten. (Um ein Roulette zu starten)</div></div>
+          <button class="copy" data-copy="!bet ">Kopieren</button>
+        </li>
 
       <li class="cmd" data-text="!pin user x y anchorx anchory">
         <div class="cmd-left"><div class="cmd-code">!pin &lt;user&gt; x y anchorX anchorY</div><div class="cmd-desc">Pinnt/positioniert einen User (für Highlights / Kontrolle).</div></div>
@@ -1466,6 +1481,7 @@ section:hover{
   </script>
 </body>
 </html>
+
 
 
 
