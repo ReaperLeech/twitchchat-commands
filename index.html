@@ -1444,42 +1444,60 @@ if(clearBtn && search){
     }
 
     function applyFilter(){
-      const q = (search?.value || '').trim().toLowerCase();
-      let visible = 0;
+  const q = (search?.value || '').trim().toLowerCase();
+  let visible = 0;
 
-      items.forEach(li => {
-        const hay =
-          (li.getAttribute('data-text') || '').toLowerCase()
-          + ' ' + (li.querySelector('.cmd-code')?.textContent || '').toLowerCase()
-          + ' ' + (li.querySelector('.cmd-desc')?.textContent || '').toLowerCase();
-        li.dataset.matchText = (q === '' || hay.includes(q)) ? '1' : '0';
-      });
+  items.forEach(li => {
+    const hay =
+      (li.getAttribute('data-text') || '').toLowerCase()
+      + ' ' + (li.querySelector('.cmd-code')?.textContent || '').toLowerCase()
+      + ' ' + (li.querySelector('.cmd-desc')?.textContent || '').toLowerCase();
+    li.dataset.matchText = (q === '' || hay.includes(q)) ? '1' : '0';
+  });
 
-      sections.forEach(sec => {
-        const cat = sec.getAttribute('data-cat');
+  sections.forEach(sec => {
+    const cat = sec.getAttribute('data-cat');
 
-        if (isSecretSection(sec) && !showMods){
-          sec.style.display = 'none';
-          Array.from(sec.querySelectorAll('.cmd')).forEach(li => li.style.display = 'none');
-          return;
-        }
-
-        const catOk = (activeCat === 'all' || cat === activeCat);
-
-        const secItems = Array.from(sec.querySelectorAll('.cmd'));
-        let secHasVisible = false;
-
-        secItems.forEach(li => {
-          const show = catOk && (li.dataset.matchText === '1');
-          li.style.display = show ? '' : 'none';
-          if (show){ secHasVisible = true; visible++; }
-        });
-
-        sec.style.display = secHasVisible ? '' : 'none';
-      });
-
-      if (empty) empty.style.display = (visible === 0) ? 'block' : 'none';
+    if (isSecretSection(sec) && !showMods){
+      sec.style.display = 'none';
+      Array.from(sec.querySelectorAll('.cmd')).forEach(li => li.style.display = 'none');
+      return;
     }
+
+    const catOk = (activeCat === 'all' || cat === activeCat);
+
+    const secItems = Array.from(sec.querySelectorAll('.cmd'));
+    let secHasVisible = false;
+
+    secItems.forEach(li => {
+      const show = catOk && (li.dataset.matchText === '1');
+      li.style.display = show ? '' : 'none';
+      if (show){ secHasVisible = true; visible++; }
+    });
+
+    // Section nur anzeigen, wenn darin Commands sichtbar sind
+    sec.style.display = secHasVisible ? '' : 'none';
+
+    // ===== FIX: leere Subpanels/Kacheln innerhalb einer Section verstecken =====
+    if (sec.style.display !== 'none'){
+      const subpanels = Array.from(sec.querySelectorAll('.subpanel'));
+      subpanels.forEach(sp => {
+        const cmds = Array.from(sp.querySelectorAll('.cmd'));
+        const hasVisibleCmd = cmds.some(li => li.style.display !== 'none');
+        sp.style.display = hasVisibleCmd ? '' : 'none';
+      });
+
+      // Wenn ein .split Container keine sichtbaren Subpanels mehr hat -> ausblenden
+      Array.from(sec.querySelectorAll('.split')).forEach(split => {
+        const visibleSub = Array.from(split.querySelectorAll(':scope > .subpanel'))
+          .some(sp => sp.style.display !== 'none');
+        split.style.display = visibleSub ? '' : 'none';
+      });
+    }
+  });
+
+  if (empty) empty.style.display = (visible === 0) ? 'block' : 'none';
+}
 
     filterBtns.forEach(btn => {
       btn.addEventListener('click', () => {
@@ -1527,6 +1545,7 @@ if(clearBtn && search){
   </script>
 </body>
 </html>
+
 
 
 
