@@ -9,6 +9,7 @@ This website is a custom command overview created for my Twitch community.
 - VIP / SUB badges for role-restricted commands
 - Copy a command with one click (button or the command itself)
 - Click the logo to return to the start view
+- German and English (switch via the flag button, browser language is detected automatically)
 - Moderator section is encrypted and only accessible to the moderation team
 
 © 2026 leech (ReaperLeech). All rights reserved.

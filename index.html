@@ -5,1674 +5,1492 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="author" content="leech (ReaperLeech)">
   <meta name="copyright" content="© 2026 leech (ReaperLeech). All rights reserved.">
+  <meta name="theme-color" content="#0e0b16">
   <title>leech's TwitchChat-Commands</title>
 
   <!-- Bilder liegen in: assets/img/ -->
   <link rel="icon" href="assets/img/favicon.ico" />
-
   <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon-16x16.png" />
   <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32x32.png" />
-
   <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icon.png" />
-
   <link rel="icon" type="image/png" sizes="192x192" href="assets/img/android-chrome-192x192.png" />
   <link rel="icon" type="image/png" sizes="512x512" href="assets/img/android-chrome-512x512.png" />
 
   <style>
   :root{
-    --text: #ffffff;
-    --muted: #d6d6d6;
-    --panel: rgba(0,0,0,.62);
-    --panel-border: rgba(255,255,255,.18);
-    --accent: #ff4d4d;
-    --chip: rgba(255,255,255,.08);
-    --chip-border: rgba(255,255,255,.14);
+    --bg:        #0b0b10;
+    --surface:   rgba(14, 14, 20, .58);
+    --surface-2: rgba(14, 14, 20, .55);
+    --row:       rgba(10,10,14,.45);
+    --row-hover: rgba(10,10,14,.65);
+    --line:      rgba(255,255,255,.10);
+    --line-2:    rgba(255,255,255,.14);
+    --text:      #ecebf3;
+    --muted:     #b9b8c4;
+    --dim:       #8d8c99;
+
+    --purple:    #b26bff;
+    --purple-bg: rgba(178,107,255,.14);
+    --green:     #6ee07a;
+    --green-bg:  rgba(110,224,122,.13);
+    --amber:     #ffc65c;
+    --amber-bg:  rgba(255,198,92,.13);
+    --pink:      #ff7ac6;
+    --pink-bg:   rgba(255,122,198,.14);
+    --blue:      #5cc8ff;
+    --blue-bg:   rgba(92,200,255,.15);
+    --red:       #ff6b6b;
+    --red-bg:    rgba(255,107,107,.14);
+
+    --radius:    14px;
+    --radius-sm: 9px;
+    --mono: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --toolbar-h: 64px;
   }
 
-  /* ===== FIX: verhindert Overflow nach rechts (Padding/Border zählen mit) ===== */
-  *, *::before, *::after{
-    box-sizing: border-box;
-  }
+  *, *::before, *::after{ box-sizing: border-box; }
 
-  html, body{
-    max-width: 100%;
-    overflow-x: hidden;
-  }
+  html{ scroll-behavior: smooth; scroll-padding-top: calc(var(--toolbar-h) + 16px); }
+  html, body{ max-width: 100%; overflow-x: clip; }
 
   body{
-    margin:0;
-    font-family: Arial, Helvetica, sans-serif;
-    color: var(--text);
-    text-shadow: 1px 1px 0px #000000;
-    background: #000 url("assets/img/page_bg.jpg") center/cover fixed no-repeat;
-  }
-
-  .wrap{
-    min-height: 100vh;
-    display:flex;
-    justify-content:center;
-    padding: 28px 14px 40px;
-  }
-
-  .panel{
-  width: min(1400px, calc(100vw - 28px));
-  background: var(--panel);
-  border: 1px solid var(--panel-border);
-  border-radius: 14px;
-  padding: 18px 18px 22px;
-  box-shadow: 0 10px 30px rgba(0,0,0,.35);
-  backdrop-filter: blur(3px);
-  overflow-x: hidden;
-}
-
-  /* ===== Header (zentriert, ohne Titeltext) ===== */
-  header{
-    display:flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content:center;
-    gap: 10px;
-    margin-bottom: 12px;
-    text-align:center;
-  }
-
-  .brand{
-    display:flex;
-    flex-direction: column;
-    align-items:center;
-    justify-content:center;
-    gap: 10px;
-    width: 100%;
-  }
-
-  .brand img{
-    width: 340px;
-    max-width: 90%;
-    height: auto;
-    display:block;
-  }
-
-  .subtitle{
-    display:flex;
-    flex-direction: column;
-    gap: 4px;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-  }
-
-  .subtitle .line1{
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     font-size: 14px;
-    color: rgba(255,255,255,.92);
-    font-weight: 700;
+    line-height: 1.45;
+    color: var(--text);
+    background: var(--bg);
   }
-  .subtitle .line2{
-    font-size: 12px;
-    color: rgba(255,255,255,.88);
-    font-weight: 600;
+
+  /* Hintergrund: eigenes fixiertes Layer (funktioniert auch auf iOS) */
+  body::before{
+    content: "";
+    position: fixed; inset: 0; z-index: -1;
+    background:
+      linear-gradient(180deg, rgba(8,8,12,.15) 0%, rgba(8,8,12,.35) 50%, rgba(8,8,12,.5) 100%),
+      url("assets/img/page_bg.jpg") center/cover no-repeat;
   }
-  .subtitle .line3{
-    font-size: 12px;
+
+  a{ color: var(--green); text-decoration: none; }
+  a:hover{ text-decoration: underline; }
+
+  /* ===== Header ===== */
+  .hero{
+    display: flex; justify-content: center;
+    padding: 22px 16px 6px;
+  }
+  .hero img{
+    width: 340px; max-width: 90%; height: auto; display: block;
+    filter: drop-shadow(0 8px 24px rgba(0,0,0,.45));
+  }
+
+  /* ===== Sticky Toolbar ===== */
+  .toolbar{
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(10,10,14,.55);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  .toolbar-inner{
+    max-width: 1400px; margin: 0 auto;
+    padding: 12px 18px;
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+    min-height: var(--toolbar-h);
+  }
+
+  .tabs{
+    display: flex; gap: 4px; padding: 4px;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow-x: auto; scrollbar-width: none;
+    max-width: 100%;
+  }
+  .tabs::-webkit-scrollbar{ display: none; }
+
+  .fbtn{
+    flex: 0 0 auto;
+    display: inline-flex; align-items: center; gap: 8px;
+    cursor: pointer;
+    border: 0; border-radius: 9px;
+    background: transparent;
+    color: var(--muted);
+    font: inherit; font-size: 13px; font-weight: 600;
+    padding: 7px 12px;
+    transition: background .15s, color .15s;
+    white-space: nowrap;
+  }
+  .fbtn:hover{ color: var(--text); background: rgba(255,255,255,.05); }
+  .fbtn.active{ color: #fff; background: var(--green-bg); box-shadow: inset 0 0 0 1px rgba(110,224,122,.5); }
+  .fbtn.modtab.active{ background: var(--red-bg); box-shadow: inset 0 0 0 1px rgba(255,107,107,.5); }
+  .fbtn .n{
+    font-size: 11px; font-weight: 700;
+    padding: 1px 7px; border-radius: 99px;
+    background: rgba(255,255,255,.08); color: var(--muted);
+    min-width: 22px; text-align: center;
+  }
+  .fbtn.active .n{ background: rgba(255,255,255,.14); color: #fff; }
+
+  .search{
+    flex: 1 1 280px; min-width: 220px;
+    position: relative;
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 0 10px 0 12px;
+    height: 42px;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .search:focus-within{ border-color: rgba(110,224,122,.6); box-shadow: 0 0 0 3px rgba(110,224,122,.15); }
+  .search svg{ flex: 0 0 auto; color: var(--dim); }
+  .search input{
+    flex: 1; min-width: 0;
+    background: transparent; border: 0; outline: none;
+    color: var(--text); font: inherit; font-size: 14px;
+  }
+  .search input::placeholder{ color: var(--dim); }
+  .search kbd{
+    font: 600 11px var(--mono); color: var(--dim);
+    border: 1px solid var(--line-2); border-bottom-width: 2px;
+    border-radius: 6px; padding: 1px 6px;
+  }
+  #clearSearch{
+    display: none;
+    cursor: pointer; border: 0; background: rgba(255,255,255,.08);
+    color: var(--muted); font-size: 12px; line-height: 1;
+    width: 22px; height: 22px; border-radius: 50%;
+    align-items: center; justify-content: center;
+  }
+  #clearSearch:hover{ color: #fff; background: rgba(255,255,255,.16); }
+
+  .langbtn{
+    flex: 0 0 auto;
+    display: inline-flex; align-items: center; gap: 8px;
+    height: 42px; padding: 0 12px;
+    cursor: pointer;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    color: var(--text); font: inherit; font-size: 13px; font-weight: 700;
+    transition: border-color .15s, background .15s;
+  }
+  .langbtn:hover{ border-color: rgba(110,224,122,.6); background: var(--green-bg); }
+  .langbtn svg{ width: 22px; height: 14px; border-radius: 3px; display: block; box-shadow: 0 0 0 1px rgba(255,255,255,.15); }
+
+  .legend{
+    display: flex; gap: 6px; align-items: center; flex-wrap: wrap;
+    color: var(--dim); font-size: 12px;
+  }
+
+  /* ===== Layout: Sidebar + Inhalt ===== */
+  .layout{
+    max-width: 1400px; margin: 0 auto;
+    padding: 18px 18px 30px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    align-items: start;
+  }
+  @media (min-width: 1000px){
+    .layout{ grid-template-columns: 230px minmax(0, 1fr); }
+  }
+
+  .sidenav{
+    display: none;
+    position: sticky; top: calc(var(--toolbar-h) + 18px);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 10px;
+    max-height: calc(100vh - var(--toolbar-h) - 36px);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    overflow-y: auto;
+  }
+  @media (min-width: 1000px){ .sidenav{ display: block; } }
+  @media (min-width: 720px){ .hero img{ width: 380px; } }
+
+  .sidenav .label{
+    font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--dim); padding: 8px 10px 6px;
+  }
+  .sidenav .label:not(:first-child){ margin-top: 8px; border-top: 1px solid var(--line); padding-top: 14px; }
+  .sidenav a{
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 10px; border-radius: 9px;
+    color: var(--muted); font-weight: 500; font-size: 13px;
+    text-decoration: none;
+  }
+  .sidenav a:hover{ background: rgba(255,255,255,.05); color: var(--text); }
+  .sidenav a.current{ background: var(--green-bg); color: #fff; }
+  .sidenav a .t{ flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sidenav a .n{ font-size: 11px; color: var(--dim); font-weight: 600; }
+  .sidenav a.current .n{ color: #c4f7c9; }
+
+  #grid{ display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+
+  /* ===== Section-Karten ===== */
+  .sec{
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    overflow: hidden;
+    min-width: 0;
+  }
+  .sec-head{
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px;
+    cursor: pointer; user-select: none;
+    border-bottom: 1px solid var(--line);
+  }
+  .sec-head:hover{ background: rgba(255,255,255,.025); }
+  .sec-ico{
+    width: 34px; height: 34px; flex: 0 0 auto;
+    display: grid; place-items: center;
+    border-radius: 10px; font-size: 17px;
+    background: var(--purple-bg);
+  }
+  .sec[data-cat="games"] .sec-ico{ background: var(--green-bg); }
+  .sec[data-cat="mod"]   .sec-ico{ background: var(--red-bg); }
+  .sec-head h2{ margin: 0; font-size: 16px; font-weight: 700; flex: 1; min-width: 0; }
+  .sec-count{
+    font-size: 12px; font-weight: 600; color: var(--muted);
+    background: rgba(255,255,255,.06); border-radius: 99px; padding: 2px 10px;
+  }
+  .sec-chev{
+    width: 26px; height: 26px; display: grid; place-items: center;
+    color: var(--dim); transition: transform .2s;
+  }
+  .sec.collapsed .sec-chev{ transform: rotate(-90deg); }
+  .sec.collapsed .sec-head{ border-bottom-color: transparent; }
+  .sec.collapsed .group{ display: none !important; }
+
+  .group{ padding: 12px 14px 14px; }
+  .group + .group{ border-top: 1px dashed var(--line); }
+  .group h3{
+    margin: 2px 2px 10px;
+    font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
     color: var(--muted);
   }
 
-  /* ===== Split Panels (z.B. Mod: Core + Stream Avatars nebeneinander) ===== */
-  .split{
-    display:grid;
-    grid-template-columns: 1fr;
-    gap: 12px;
-    align-items: start;
-  }
-
-  .subpanel{
-    border: 1px solid rgba(255,255,255,.14);
-    border-radius: 12px;
-    padding: 10px 10px 8px;
-    background: rgba(0,0,0,.18);
-  }
-
-  .subpanel h3{ margin-top: 0; }
-
-  @media (min-width: 720px){
-    .split{ grid-template-columns: 1fr 1fr; }
-  }
-
-  @media (min-width: 1024px){
-    .modgrid-3{ grid-template-columns: 1fr 1fr 1fr; }
-  }
-
-  hr{
-    border: none;
-    border-top: 1px solid rgba(255,255,255,.25);
-    margin: 14px 0 18px;
-  }
-
-  /* ===== Topbar ===== */
-  .topbar{
-    display:flex;
-    gap: 12px;
-    align-items:center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    margin-bottom: 14px;
-  }
-
-  .hint{
-    flex: 1 1 320px;
-    background: rgba(255, 77, 77, .12);
-    border: 1px solid rgba(255, 77, 77, .35);
-    border-radius: 12px;
-    padding: 10px 12px;
-    color: var(--text);
-    min-width: 260px;
-  }
-  .hint b{ color: var(--accent); }
-
-  .search{
-    flex: 1 1 280px;
-    min-width: 260px;
-    display:flex;
-    align-items:center;
-    gap: 10px;
-    background: rgba(0,0,0,.28);
-    border: 1px solid rgba(255,255,255,.18);
-    border-radius: 12px;
-    padding: 10px 12px;
-  }
-
-  .search input{
-    width: 100%;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: var(--text);
-    font-size: 14px;
-  }
-  .search input::placeholder{ color: rgba(255,255,255,.65); }
-
-  /* ===== Tabs ===== */
-  .filters{
-    display:flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    align-items:center;
-    justify-content: flex-start;
-  }
-
-  .fbtn{
-    cursor:pointer;
-    border: 1px solid rgba(255,255,255,.18);
-    background: rgba(0,0,0,.25);
-    color: var(--text);
-    border-radius: 10px;
-    padding: 8px 10px;
-    font-size: 12px;
-  }
-
-  .fbtn:hover{
-    border-color: rgba(255,255,255,.32);
-    background: rgba(0,0,0,.35);
-  }
-
-  .fbtn.active{
-    border-color: rgba(255,77,77,.55);
-    background: rgba(255,77,77,.18);
-  }
-
-  .fbtn.modtab.active{
-    border-color: rgba(255,77,77,.70);
-    background: rgba(255,77,77,.22);
-  }
-
-  /* ===== Grid ===== */
-  .grid{
-    display:grid;
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  @media (min-width: 720px){
-    .grid{ grid-template-columns: 1fr 1fr; }
-    .brand img{ width: 380px; }
-  }
-
-  @media (min-width: 1024px){
-    .grid{ grid-template-columns: 1fr 1fr 1fr; }
-    .panel{ padding: 22px 22px 26px; }
-  }
-
-  section{
-    border: 1px solid rgba(255,255,255,.14);
-    border-radius: 12px;
-    padding: 12px 12px 10px;
-    background: rgba(0,0,0,.22);
-  }
-
-  /* Mod-Section soll immer über die komplette Breite der Grid-Zeile gehen */
-  section[data-cat="mod"]{
-    grid-column: 1 / -1;
-  }
-
-  section h2{
-    margin: 0 0 10px;
-    font-size: 18px;
-    color: var(--text);
-  }
-
-  h3{
-    margin: 12px 0 8px;
-    font-size: 14px;
-    color: rgba(255,255,255,.92);
-    font-weight: 700;
-  }
-
-  ul{
-    margin: 0;
-    padding-left: 0;
-    list-style: none;
-    display:flex;
-    flex-direction: column;
+  /* ===== Command-Liste ===== */
+  ul.cmds{
+    list-style: none; margin: 0; padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr));
     gap: 8px;
   }
 
   .cmd{
-    display:flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    background: var(--chip);
-    border: 1px solid var(--chip-border);
-    border-radius: 12px;
-    padding: 8px 10px;
-    width: 100%;
-  }
-
-  .cmd-left{
+    display: flex; align-items: center; gap: 10px;
+    background: var(--row);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: 9px 10px 9px 12px;
     min-width: 0;
-    display:flex;
-    flex-direction: column;
-    gap: 3px;
+    transition: background .12s, border-color .12s;
   }
+  .cmd:hover{ background: var(--row-hover); border-color: var(--line-2); }
+
+  .cmd-left{ flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+  .cmd-top{ display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-width: 0; }
 
   .cmd-code{
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-    color: var(--text);
-    font-size: 14px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-family: var(--mono); font-size: 13px; font-weight: 600;
+    padding: 2px 8px; border-radius: 6px;
     max-width: 100%;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    cursor: pointer;
+    color: #e6d4ff; background: var(--purple-bg);
   }
+  .cmd-code.p-hash{ color: #c4f7c9; background: var(--green-bg); }
+  .cmd-code.p-word{ color: #ffe2a8; background: var(--amber-bg); }
+  .cmd-code .arg{ opacity: .6; font-weight: 500; }
 
-  .cmd-desc{
-    color: var(--muted);
-    font-size: 12px;
-    line-height: 1.25;
+  .cmd-desc, .cmd-desc-en{ color: var(--muted); font-size: 12.5px; line-height: 1.4; }
+  .cmd-desc-en{ display: none; }
+  html[lang="en"] li.has-en .cmd-desc{ display: none; }
+  html[lang="en"] li.has-en .cmd-desc-en{ display: block; }
+  .cmd-desc-en b,
+  .cmd-desc b{ color: var(--text); font-family: var(--mono); font-weight: 600; font-size: 12px; }
+
+  .role{
+    font-size: 10.5px; font-weight: 700; letter-spacing: .03em;
+    padding: 1px 7px; border-radius: 99px; line-height: 1.6;
+    white-space: nowrap;
   }
+  .role.vip{ color: var(--pink); background: var(--pink-bg); box-shadow: inset 0 0 0 1px rgba(255,122,198,.35); }
+  .role.sub{ box-shadow: inset 0 0 0 1px rgba(92,200,255,.35); }
+  .role.sub{ color: var(--blue); background: var(--blue-bg); }
+  .role.mod{ color: var(--green); background: var(--green-bg); }
 
   .copy{
     flex: 0 0 auto;
+    width: 34px; height: 34px;
+    display: grid; place-items: center;
     cursor: pointer;
-    border: 1px solid rgba(255,255,255,.18);
-    background: rgba(0,0,0,.25);
-    color: var(--text);
-    border-radius: 10px;
-    padding: 7px 10px;
-    font-size: 12px;
+    border: 1px solid var(--line-2);
+    background: rgba(0,0,0,.2);
+    color: var(--muted);
+    border-radius: 9px;
+    font-size: 0;            /* Text "Kopieren" bleibt im HTML, wird durch Icon ersetzt */
+    transition: color .12s, background .12s, border-color .12s;
   }
-  .copy:hover{
-    border-color: rgba(255,255,255,.32);
-    background: rgba(0,0,0,.35);
-  }
+  .copy:hover{ color: #fff; border-color: rgba(178,107,255,.6); background: var(--purple-bg); }
+  .copy.done{ color: var(--green); border-color: rgba(110,224,122,.6); background: var(--green-bg); }
+  .copy svg{ width: 16px; height: 16px; }
 
+  /* ===== Leer / Footer / Toast ===== */
   .empty{
-    display:none;
-    margin-top: 14px;
-    padding: 12px;
-    border-radius: 12px;
-    border: 1px dashed rgba(255,255,255,.25);
-    color: rgba(255,255,255,.85);
-    text-align:center;
+    display: none;
+    padding: 28px 16px; text-align: center;
+    border: 1px dashed var(--line-2); border-radius: var(--radius);
+    background: var(--surface); color: var(--muted);
   }
 
   .footer{
-    margin-top: 18px;
-    color: rgba(255,255,255,.8);
-    font-size: 12px;
-    display:flex;
-    justify-content:space-between;
-    flex-wrap: wrap;
-    gap: 10px;
+    max-width: 1400px; margin: 0 auto;
+    padding: 0 18px 28px;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+    color: var(--dim); font-size: 12px;
   }
 
-  a{ color: #fff; text-decoration:none; }
-  a:hover{ text-decoration:underline; }
-
-  /* ===== FIX: Grid-Items dürfen schrumpfen -> kein Overflow nach rechts ===== */
-  .grid{
-    min-width: 0;
-    width: 100%;
+  .toast{
+    position: fixed; left: 50%; bottom: 22px; z-index: 100;
+    transform: translate(-50%, 20px); opacity: 0; pointer-events: none;
+    background: #1d1730; border: 1px solid rgba(110,224,122,.45);
+    color: var(--text); font-size: 13px;
+    padding: 9px 14px; border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.45);
+    transition: opacity .18s, transform .18s;
   }
+  .toast.show{ opacity: 1; transform: translate(-50%, 0); }
+  .toast code{ font-family: var(--mono); color: #c4f7c9; }
 
-  .grid > section{
-    min-width: 0;     /* WICHTIG: Grid-Child darf kleiner als min-content werden */
-    max-width: 100%;
+  @media (max-width: 640px){
+    .toolbar-inner{ padding: 10px 12px; gap: 10px; }
+    .search{ order: -1; flex-basis: 100%; }
+    .search kbd{ display: none; }
+    .tabs{ flex: 1 1 0; min-width: 0; }
+    .layout{ padding: 12px 10px 24px; }
+    .hero img{ width: 300px; }
+    .legend{ display: none; }
   }
-
-  section, ul, li, .cmd, .cmd-left{
-    min-width: 0;
-    max-width: 100%;
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior: auto; }
+    *{ transition: none !important; }
   }
-
-  /* Sicherheitsnetz: falls trotzdem irgendwo etwas rausläuft */
-  .panel{
-    overflow-x: hidden;
-  }
-  /* ===== FIX: Overlap-Klickproblem (Sections bekommen saubere Layer) ===== */
-section{
-  position: relative;
-  z-index: 0;          /* normal hinten */
-  isolation: isolate;  /* eigener Stacking-Context -> stabil */
-  }
-
-section:hover{
-  z-index: 5;          /* die Section unter der Maus kommt nach vorne */
-  }
-
-    /* ===== Clear-Button (X) in Search ===== */
-.search{
-  position: relative;
-}
-
-#clearSearch{
-  display: none;              /* erscheint nur wenn Text drin ist */
-  cursor: pointer;
-  border: none;
-  background: transparent;
-  color: rgba(255,255,255,.85);
-  font-size: 18px;
-  line-height: 1;
-  padding: 0 6px;
-}
-
-#clearSearch:hover{
-  color: #fff;
-}
-</style>
+  </style>
 </head>
 
 <body>
-  <div class="wrap">
-    <main class="panel" id="top">
-      <header>
-        <div class="brand">
-          <img src="assets/img/logo.png" alt="Logo" />
-          <div class="subtitle">
-           <!--  <div class="line1">Alle Commands auf einen Blick</div>
-            <div class="line2">Passt sich automatisch an (Handy / Tablet / Desktop)</div>
-            <div class="line3">Search + Copy + Tabs (Chat / Spielbefehle)</div> -->
-          </div>
-        </div>
-      </header>
+  <header class="hero" id="top">
+    <a href="./" id="homeLink" title="Zur Startansicht" data-i18n-title="home"><img src="assets/img/logo.png" alt="leech's TwitchChat-Commands" /></a>
+  </header>
 
-      <hr />
+  <div class="toolbar">
+    <div class="toolbar-inner">
+      <nav class="tabs" id="filters">
+        <button class="fbtn" data-filter="all"><span data-i18n="tabAll">📜 Alle</span> <span class="n"></span></button>
+        <button class="fbtn active" data-filter="core"><span data-i18n="tabCore">💬 Chat / Info / Fun</span> <span class="n"></span></button>
+        <button class="fbtn" data-filter="games"><span data-i18n="tabGames">🎮 Spielbefehle</span> <span class="n"></span></button>
+        <!-- nur sichtbar im Mod-Modus -->
+        <button class="fbtn modtab" data-filter="mod" id="modTabBtn" style="display:none;">⚔️ Mod <span class="n"></span></button>
+      </nav>
 
-      <!-- HIER TEIL 2 EINFÜGEN -->
-      <div class="topbar">
-        <div class="hint" id="hintBox">
-          <b>Tipp:</b> Du kannst oben filtern oder einfach über die Suche alles finden.
-        </div>
-
-        <div class="search">
-            <span style="opacity:.85;">🔎</span>
-            <input id="search" type="text" placeholder="Commands filtern… z.B. followage, hug, death, #pullup" />
-            <button id="clearSearch" type="button" aria-label="Suche leeren">✕</button>
-            </div>
-
-        <div class="filters" id="filters">
-          <button class="fbtn" data-filter="all">📜 Alle</button>
-          <button class="fbtn active" data-filter="core">💬 Chat/Info/Fun</button>
-          <button class="fbtn" data-filter="games">🎮 Spielbefehle</button>
-
-          <!-- nur sichtbar bei ?mod=1 -->
-          <button class="fbtn modtab" data-filter="mod" id="modTabBtn" style="display:none;">⚔️ Mod</button>
-        </div>
+      <div class="search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="search" type="text" autocomplete="off" spellcheck="false" placeholder="Commands suchen… z.B. followage, hug, death, #pullup" data-i18n-ph="search" />
+        <button id="clearSearch" type="button" aria-label="Suche leeren" data-i18n-aria="clear">✕</button>
       </div>
 
-      <div class="grid" id="grid">
-
-        <!-- ================= CORE: FUN / INTERAKTION ================= -->
-        <section data-cat="core">
-          <h2>🎮 Fun / Interaktion</h2>
-          <ul>
-            <!-- (Sortierung passiert automatisch per JS) -->
-
-            <li class="cmd" data-text="!afk weg kurz">
-              <div class="cmd-left"><div class="cmd-code">!afk</div><div class="cmd-desc">Sagt dem Chat, dass du kurz weg bist (AFK).</div></div>
-              <button class="copy" data-copy="!afk">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!back zurück da">
-              <div class="cmd-left"><div class="cmd-code">!back</div><div class="cmd-desc">Sagt dem Chat, dass du wieder da bist (nicht mehr afk/lurk).</div></div>
-              <button class="copy" data-copy="!back">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!boop user">
-              <div class="cmd-left"><div class="cmd-code">!boop &lt;user&gt;</div><div class="cmd-desc">Boop den &lt;user&gt;.</div></div>
-              <button class="copy" data-copy="!boop ">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!cuddle user kuscheln">
-              <div class="cmd-left"><div class="cmd-code">!cuddle &lt;user&gt;</div><div class="cmd-desc">Kuschelt den &lt;user&gt; für dich.</div></div>
-              <button class="copy" data-copy="!cuddle ">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!dance user tanzen">
-              <div class="cmd-left"><div class="cmd-code">!dance &lt;user&gt;</div><div class="cmd-desc">Du tanzt mit dem &lt;user&gt;.</div></div>
-              <button class="copy" data-copy="!dance ">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!fistbump user">
-              <div class="cmd-left"><div class="cmd-code">!fistbump &lt;user&gt;</div><div class="cmd-desc">Gibt dem &lt;user&gt; einen Fistbump.</div></div>
-              <button class="copy" data-copy="!fistbump ">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!headpat user">
-              <div class="cmd-left"><div class="cmd-code">!headpat &lt;user&gt;</div><div class="cmd-desc">Lobt den &lt;user&gt; mit einem Headpat.</div></div>
-              <button class="copy" data-copy="!headpat ">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!highfive user high five">
-              <div class="cmd-left"><div class="cmd-code">!highfive &lt;user&gt;</div><div class="cmd-desc">High Five für den &lt;user&gt;.</div></div>
-              <button class="copy" data-copy="!highfive ">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!hug user umarmung">
-              <div class="cmd-left"><div class="cmd-code">!hug &lt;user&gt;</div><div class="cmd-desc">Umarmt den &lt;user&gt;.</div></div>
-              <button class="copy" data-copy="!hug ">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!punch faust punch kamera animation">
-              <div class="cmd-left"><div class="cmd-code">!punch</div><div class="cmd-desc">Punch in leech's Gesicht. 😄 (nur VIP's & Subscribers)</div></div>
-              <button class="copy" data-copy="!punch">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!love input liebe">
-              <div class="cmd-left"><div class="cmd-code">!love &lt;input&gt;</div><div class="cmd-desc">Fragt den Bot, wie sehr du &lt;input&gt; liebst.</div></div>
-              <button class="copy" data-copy="!love ">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!lurk lurking">
-              <div class="cmd-left"><div class="cmd-code">!lurk</div><div class="cmd-desc">Sagt dem Chat, dass du lurkst.</div></div>
-              <button class="copy" data-copy="!lurk">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!münzwurf coinflip münze">
-              <div class="cmd-left"><div class="cmd-code">!münzwurf</div><div class="cmd-desc">Wirft eine Münze: Kopf oder Zahl.</div></div>
-              <button class="copy" data-copy="!münzwurf">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!roll würfeln dice">
-              <div class="cmd-left"><div class="cmd-code">!roll</div><div class="cmd-desc">Würfelt einen normalen 6-seitigen Würfel.</div></div>
-              <button class="copy" data-copy="!roll">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!tickle user kitzeln">
-              <div class="cmd-left"><div class="cmd-code">!tickle &lt;user&gt;</div><div class="cmd-desc">Kitzelt den &lt;user&gt;.</div></div>
-              <button class="copy" data-copy="!tickle ">Kopieren</button>
-            </li>
-          </ul>
-        </section>
-
-        <!-- ================= CORE: SOUNDS / MEMES ================= -->
-        <section data-cat="core">
-          <h2>🔊 Sounds / Memes</h2>
-          <ul>
-            <li class="cmd" data-text="!bye !cya sound">
-              <div class="cmd-left"><div class="cmd-code">!bye</div><div class="cmd-desc">Spielt den „Bye“-Sound ab.</div></div>
-              <button class="copy" data-copy="!bye">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!cya !bye sound">
-              <div class="cmd-left"><div class="cmd-code">!cya</div><div class="cmd-desc">Spielt ebenfalls den „Bye“-Sound ab.</div></div>
-              <button class="copy" data-copy="!cya">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!dere !hallo sound">
-              <div class="cmd-left"><div class="cmd-code">!dere</div><div class="cmd-desc">Spielt einen „Hallo“-Sound ab.</div></div>
-              <button class="copy" data-copy="!dere">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!hallo !dere sound">
-              <div class="cmd-left"><div class="cmd-code">!hallo</div><div class="cmd-desc">Spielt ebenfalls einen „Hallo“-Sound ab.</div></div>
-              <button class="copy" data-copy="!hallo">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!nice !noice sound">
-              <div class="cmd-left"><div class="cmd-code">!nice</div><div class="cmd-desc">Spielt den „Nice“-Sound ab.</div></div>
-              <button class="copy" data-copy="!nice">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!noice !nice sound">
-              <div class="cmd-left"><div class="cmd-code">!noice</div><div class="cmd-desc">Spielt ebenfalls den „Nice“-Sound ab.</div></div>
-              <button class="copy" data-copy="!noice">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="lezduit sound">
-              <div class="cmd-left"><div class="cmd-code">LEZDUIT</div><div class="cmd-desc">Selbsterklärend 😄 (nur VIP's)</div></div>
-              <button class="copy" data-copy="LEZDUIT">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!fail zonk fail sound">
-              <div class="cmd-left"><div class="cmd-code">!fail</div><div class="cmd-desc">Spielt den „Zonk“-Sound ab.</div></div>
-              <button class="copy" data-copy="!fail">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!boa sound">
-          <div class="cmd-left"><div class="cmd-code">!boa</div><div class="cmd-desc">Spielt den „Boa“-Sound ab. (nur VIP's)</div></div>
-          <button class="copy" data-copy="!boa">Kopieren</button>
-        </li>
-
-        <li class="cmd" data-text="!dboa sound">
-          <div class="cmd-left"><div class="cmd-code">!dboa</div><div class="cmd-desc">Spielt den „Doppel-Boa“-Sound ab. (nur VIP's)</div></div>
-          <button class="copy" data-copy="!dboa">Kopieren</button>
-        </li>
-
-            <li class="cmd" data-text="gyst sound get your shit together">
-          <div class="cmd-left"><div class="cmd-code">gyst</div><div class="cmd-desc">„Get your sh*t together“-Sound. (nur VIP's)</div></div>
-          <button class="copy" data-copy="GYST">Kopieren</button>
-        </li>
-
-        <li class="cmd" data-text="!hm sound motherfucker">
-          <div class="cmd-left"><div class="cmd-code">!hm</div><div class="cmd-desc">„Hello Motherf*cker“-Sound. (nur VIP's & Subscribers)</div></div>
-          <button class="copy" data-copy="!hm">Kopieren</button>
-        </li>
-
-        <li class="cmd" data-text="okaaaaay let's go sound">
-          <div class="cmd-left"><div class="cmd-code">!letsgo</div><div class="cmd-desc">Spielt den „okaaaaay let's go“ Sound ab (nur VIP's & Subscribers)</div></div>
-          <button class="copy" data-copy="!letsgo">Kopieren</button>
-        </li>
-
-        <li class="cmd" data-text="ich bin ma kurz kacken sound">
-          <div class="cmd-left"><div class="cmd-code">!kacken</div><div class="cmd-desc">Spielt „ich bin ma kurz kacken“ ab(nur VIP's & Subscribers)</div></div>
-          <button class="copy" data-copy="!kacken">Kopieren</button>
-        </li>
-
-        <li class="cmd" data-text="schön mit senf sound">
-          <div class="cmd-left"><div class="cmd-code">!senf</div><div class="cmd-desc">Spielt „schön mit Senf“ Sound ab(nur VIP's & Subscribers)</div></div>
-          <button class="copy" data-copy="!senf">Kopieren</button>
-        </li>
-
-        <li class="cmd" data-text="!nee ne sound meme">
-          <div class="cmd-left"><div class="cmd-code">!nee</div><div class="cmd-desc">Spielt den „Ne…Näh“-Sound ab. (nur VIP's & Subscribers)</div></div>
-          <button class="copy" data-copy="!nee">Kopieren</button>
-        </li>
-
-        <li class="cmd" data-text="!klaus kinsky sound">
-          <div class="cmd-left"><div class="cmd-code">!klaus</div><div class="cmd-desc">Spielt einen zufälligen Kinsky-Sound ab. (nur VIP's & Subscribers)</div></div>
-          <button class="copy" data-copy="!klaus">Kopieren</button>
-        </li>
-
-        <li class="cmd" data-text="!schande glocke sound">
-          <div class="cmd-left"><div class="cmd-code">!schande</div><div class="cmd-desc">Läutet die „Schande“-Glocke. (nur VIP's)</div></div>
-          <button class="copy" data-copy="!schande">Kopieren</button>
-        </li>
-          </ul>
-        </section>
-
-        <!-- ================= CORE: CHAT / STREAM INFO ================= -->
-        <section data-cat="core">
-          <h2>📌 Chat / Stream Info</h2>
-          <ul>
-            <li class="cmd" data-text="!commands befehle link">
-              <div class="cmd-left"><div class="cmd-code">!commands</div><div class="cmd-desc">Sendet den Link zur Seite mit allen Befehlen.</div></div>
-              <button class="copy" data-copy="!commands">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!cmd befehle link">
-              <div class="cmd-left"><div class="cmd-code">!cmd</div><div class="cmd-desc">Sendet den Link zur Seite mit allen Befehlen.</div></div>
-              <button class="copy" data-copy="!cmd">Kopieren</button>
-            </li>
-
-            <!-- <li class="cmd" data-text="!created account erstellt datum">
-              <div class="cmd-left"><div class="cmd-code">!created</div><div class="cmd-desc">Zeigt das Erstellungsdatum des Twitch-Accounts (vom Viewer).</div></div>
-              <button class="copy" data-copy="!created">Kopieren</button>
-            </li> -->
-
-            <li class="cmd" data-text="!date datum">
-              <div class="cmd-left"><div class="cmd-code">!date</div><div class="cmd-desc">Zeigt das aktuelle Datum (Streamer-Zeit).</div></div>
-              <button class="copy" data-copy="!date">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!followage follow age">
-              <div class="cmd-left"><div class="cmd-code">!followage</div><div class="cmd-desc">Zeigt, wie lange der Viewer dem Streamer schon folgt.</div></div>
-              <button class="copy" data-copy="!followage">Kopieren</button>
-            </li>
-
-            <!-- <li class="cmd" data-text="!followed followed date">
-              <div class="cmd-left"><div class="cmd-code">!followed</div><div class="cmd-desc">Zeigt das Datum, seit wann der Viewer folgt.</div></div>
-              <button class="copy" data-copy="!followed">Kopieren</button>
-            </li> -->
-
-            <!-- <li class="cmd" data-text="!followers follower count">
-              <div class="cmd-left"><div class="cmd-code">!followers</div><div class="cmd-desc">Gibt die Gesamtanzahl der Follower des Channels aus.</div></div>
-              <button class="copy" data-copy="!followers">Kopieren</button>
-            </li> -->
-
-            <li class="cmd" data-text="!stats status spiel titel uptime viewer">
-              <div class="cmd-left"><div class="cmd-code">!stats</div><div class="cmd-desc">Zeigt aktuelles Spiel, Streamtitel, Uptime und Viewer-Count.</div></div>
-              <button class="copy" data-copy="!stats">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!time uhrzeit">
-              <div class="cmd-left"><div class="cmd-code">!time</div><div class="cmd-desc">Zeigt die aktuelle Uhrzeit (Streamer-Zeit).</div></div>
-              <button class="copy" data-copy="!time">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!uptime live">
-              <div class="cmd-left"><div class="cmd-code">!uptime</div><div class="cmd-desc">Zeigt, wie lange der Stream bereits läuft.</div></div>
-              <button class="copy" data-copy="!uptime">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!musik musik song artist">
-              <div class="cmd-left"><div class="cmd-code">!musik</div><div class="cmd-desc">Postet den aktuellen Musik-Artist/Link (je nachdem was gerade läuft).</div></div>
-              <button class="copy" data-copy="!musik">Kopieren</button>
-            </li>                     
-          </ul>
-        </section>
-
-        <!-- ================= CORE: DEATH COUNTER ================= -->
-        <section data-cat="core">
-          <h2>☠️ Death Counter</h2>
-          <ul>
-            <li class="cmd" data-text="!death tode tod deaths aktuelles spiel">
-              <div class="cmd-left"><div class="cmd-code">!death</div><div class="cmd-desc">Zeigt die Gesamtanzahl der Tode im aktuellen Spiel an.</div></div>
-              <button class="copy" data-copy="!death">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!deaths tode total gesamt">
-              <div class="cmd-left"><div class="cmd-code">!deaths</div><div class="cmd-desc">Zeigt die Gesamtanzahl der Tode in allen Spielen an.</div></div>
-              <button class="copy" data-copy="!deaths">Kopieren</button>
-            </li>
-          </ul>
-        </section>
-
-        <!-- ================= CORE: LINKS / SOCIALS ================= -->
-        <section data-cat="core">
-          <h2>🔗 Links / Socials</h2>
-          <ul>
-            <li class="cmd" data-text="!dc discord">
-              <div class="cmd-left"><div class="cmd-code">!dc</div><div class="cmd-desc">Sendet den Discord-Einladungslink.</div></div>
-              <button class="copy" data-copy="!dc">Kopieren</button>
-            </li>
-
-            <!--<li class="cmd" data-text="!facebook fb">
-              <div class="cmd-left"><div class="cmd-code">!facebook</div><div class="cmd-desc">Sendet den Link zur Facebook-Seite.</div></div>
-              <button class="copy" data-copy="!facebook">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!clanfb clan facebook">
-              <div class="cmd-left"><div class="cmd-code">!clanfb</div><div class="cmd-desc">Sendet den Link zur Clan-Facebook-Seite.</div></div>
-              <button class="copy" data-copy="!clanfb">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!instagram insta">
-              <div class="cmd-left"><div class="cmd-code">!instagram</div><div class="cmd-desc">Sendet den Instagram-Link.</div></div>
-              <button class="copy" data-copy="!instagram">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!claninsta clan insta instagram">
-              <div class="cmd-left"><div class="cmd-code">!claninsta</div><div class="cmd-desc">Sendet den Link zum Clan-Instagram.</div></div>
-              <button class="copy" data-copy="!claninsta">Kopieren</button>
-            </li>-->
-
-            <li class="cmd" data-text="!tree linktree">
-              <div class="cmd-left"><div class="cmd-code">!tree</div><div class="cmd-desc">Sendet den Link zu meinem Linktree (alle Social Media Links an einem Ort).</div></div>
-              <button class="copy" data-copy="!tree">Kopieren</button>
-            </li>
-
-           <!-- <li class="cmd" data-text="!twitter x">
-              <div class="cmd-left"><div class="cmd-code">!twitter</div><div class="cmd-desc">Sendet den Link zum Twitter/X-Account.</div></div>
-              <button class="copy" data-copy="!twitter">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!youtube yt">
-              <div class="cmd-left"><div class="cmd-code">!youtube</div><div class="cmd-desc">Sendet den Link zum YouTube-Account.</div></div>
-              <button class="copy" data-copy="!youtube">Kopieren</button>
-            </li> -->
-
-            <li class="cmd" data-text="!streamavatar stream avatars befehle link">
-              <div class="cmd-left"><div class="cmd-code">!streamavatar</div><div class="cmd-desc">Sendet den Link zu allen Stream-Avatars-Befehlen.</div></div>
-              <button class="copy" data-copy="!streamavatar">Kopieren</button>
-            </li>
-          </ul>
-        </section>
-
-        <!-- ================= CORE: QUOTES ================= -->
-        <section data-cat="core">
-          <h2>💬 Quotes</h2>
-          <ul>
-            <li class="cmd" data-text="!quote zufall random">
-              <div class="cmd-left"><div class="cmd-code">!quote</div><div class="cmd-desc">Zeigt eine zufälligen Quote.</div></div>
-              <button class="copy" data-copy="!quote">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!quote # nummer">
-              <div class="cmd-left"><div class="cmd-code">!quote &lt;#&gt;</div><div class="cmd-desc">Zeigt Quote Nummer &lt;#&gt; (z.B. !quote 2).</div></div>
-              <button class="copy" data-copy="!quote ">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!quote add hinzufügen mod">
-              <div class="cmd-left"><div class="cmd-code">!quote add &lt;quote&gt;</div><div class="cmd-desc">Fügt einen Quote hinzu. (Standard: Mod-Rechte nötig – kann aber angepasst werden.)</div></div>
-              <button class="copy" data-copy="!quote add ">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="!quote del löschen mod">
-              <div class="cmd-left"><div class="cmd-code">!quote del &lt;#&gt;</div><div class="cmd-desc">Löscht Quote Nummer &lt;#&gt;.</div></div>
-              <button class="copy" data-copy="!quote del ">Kopieren</button>
-            </li>
-          </ul>
-        </section>
-        <!-- HIER TEIL 3 EINFÜGEN -->
-        <!-- ================= SPIELBEFEHLE: STREAM AVATARS (Viewer) ================= -->
-        <section data-cat="games">
-  <h2>🧍 Stream Avatars (Viewer)</h2>
-
-  <h3>✅ Basics</h3>
-  <ul>
-    <li class="cmd" data-text="!actions actions">
-      <div class="cmd-left">
-        <div class="cmd-code">!actions</div>
-        <div class="cmd-desc">Zeigt verfügbare Actions (falls aktiv).</div>
+      <div class="legend">
+        <span class="role vip">VIP</span><span class="role sub">SUB</span><span data-i18n="legend">= nur für diese Rollen</span>
       </div>
-      <button class="copy" data-copy="!actions">Kopieren</button>
-    </li>
 
-    <li class="cmd" data-text="!avatars liste avatar">
-      <div class="cmd-left">
-        <div class="cmd-code">!avatars</div>
-        <div class="cmd-desc">Liste der verfügbaren Avatare anzeigen.</div>
-      </div>
-      <button class="copy" data-copy="!avatars">Kopieren</button>
-    </li>
-
-    <li class="cmd" data-text="!avatars block_man avatar auswählen">
-      <div class="cmd-left">
-        <div class="cmd-code">!avatars &quot;block_man&quot;</div>
-        <div class="cmd-desc">Avatar auswählen (Beispiel).</div>
-      </div>
-      <button class="copy" data-copy="!avatars ">Kopieren</button>
-    </li>
-
-    <li class="cmd" data-text="!gear gear gruppen">
-      <div class="cmd-left">
-        <div class="cmd-code">!gear</div>
-        <div class="cmd-desc">Gear-Gruppen anzeigen.</div>
-      </div>
-      <button class="copy" data-copy="!gear">Kopieren</button>
-    </li>
-
-    <li class="cmd" data-text="!gear kmystics gruppe">
-      <div class="cmd-left">
-        <div class="cmd-code">!gear &quot;kmystics&quot;</div>
-        <div class="cmd-desc">Items einer Gruppe anzeigen (Beispiel).</div>
-      </div>
-      <button class="copy" data-copy="!gear ">Kopieren</button>
-    </li>
-
-    <li class="cmd" data-text="!gear kmystics navi item equip">
-      <div class="cmd-left">
-        <div class="cmd-code">!gear &quot;kmystics navi&quot;</div>
-        <div class="cmd-desc">Item equippen (Beispiel).</div>
-      </div>
-      <button class="copy" data-copy="!gear ">Kopieren</button>
-    </li>
-  </ul>
-
-  <h3>🕺 Bewegung / Pose</h3>
-  <ul>
-    <li class="cmd" data-text="!links prozent bewegen">
-      <div class="cmd-left">
-        <div class="cmd-code">!links &lt;prozent&gt;</div>
-        <div class="cmd-desc">Bewegt deinen Avatar nach links (z.B. <b>!links 20</b>).</div>
-      </div>
-      <button class="copy" data-copy="!links ">Kopieren</button>
-    </li>
-
-    <li class="cmd" data-text="!rechts prozent bewegen">
-      <div class="cmd-left">
-        <div class="cmd-code">!rechts &lt;prozent&gt;</div>
-        <div class="cmd-desc">Bewegt deinen Avatar nach rechts (z.B. <b>!rechts 40</b>).</div>
-      </div>
-      <button class="copy" data-copy="!rechts ">Kopieren</button>
-    </li>
-
-    <li class="cmd" data-text="!sitzen sitzen pose">
-      <div class="cmd-left">
-        <div class="cmd-code">!sitzen</div>
-        <div class="cmd-desc">Avatar setzt sich hin.</div>
-      </div>
-      <button class="copy" data-copy="!sitzen">Kopieren</button>
-    </li>
-
-    <li class="cmd" data-text="!stehen stehen pose">
-      <div class="cmd-left">
-        <div class="cmd-code">!stehen</div>
-        <div class="cmd-desc">Avatar steht wieder auf.</div>
-      </div>
-      <button class="copy" data-copy="!stehen">Kopieren</button>
-    </li>
-  </ul>
-
-  <h3>🎨 Cosmetics / Loadout</h3>
-  <ul>
-    <li class="cmd" data-text="!color farbe style">
-      <div class="cmd-left">
-        <div class="cmd-code">!color</div>
-        <div class="cmd-desc">Zeigt verfügbare Farben/Optionen (je nach Setup).</div>
-      </div>
-      <button class="copy" data-copy="!color">Kopieren</button>
-    </li>
-
-    <li class="cmd" data-text="!color farbe setzen">
-      <div class="cmd-left">
-        <div class="cmd-code">!color &lt;farbe&gt;</div>
-        <div class="cmd-desc">Setzt eine Farbe (Beispiel: <b>!color ssb_yellow</b>).</div>
-      </div>
-      <button class="copy" data-copy="!color ">Kopieren</button>
-    </li>
-
-    <li class="cmd" data-text="!nametags nametag tag">
-      <div class="cmd-left">
-        <div class="cmd-code">!nametags</div>
-        <div class="cmd-desc">Zeigt verfügbare Nametag-Optionen (falls aktiv).</div>
-      </div>
-      <button class="copy" data-copy="!nametags">Kopieren</button>
-    </li>
-
-    <li class="cmd" data-text="!nametags tag setzen">
-      <div class="cmd-left">
-        <div class="cmd-code">!nametags &lt;tag&gt;</div>
-        <div class="cmd-desc">Setzt ein Nametag (z.B. <b>!nametags follower</b>).</div>
-      </div>
-      <button class="copy" data-copy="!nametags ">Kopieren</button>
-    </li>
-
-    <li class="cmd" data-text="!random random equip zufall">
-      <div class="cmd-left">
-        <div class="cmd-code">!random</div>
-        <div class="cmd-desc">Randomisiert dein Loadout (nur aus verfügbaren Sachen).</div>
-      </div>
-      <button class="copy" data-copy="!random">Kopieren</button>
-    </li>
-
-    <li class="cmd" data-text="!buy kategorie kaufen shop">
-      <div class="cmd-left">
-        <div class="cmd-code">!buy &lt;kategorie&gt;</div>
-        <div class="cmd-desc">Kauft zufällig aus einer Kategorie (falls Shop aktiv).</div>
-      </div>
-      <button class="copy" data-copy="!buy ">Kopieren</button>
-    </li>
-
-    <li class="cmd" data-text="!buy kategorie item kaufen shop">
-      <div class="cmd-left">
-        <div class="cmd-code">!buy &lt;kategorie&gt; &lt;item&gt;</div>
-        <div class="cmd-desc">Kauft ein bestimmtes Item (Beispiel im Portal: Avatare etc.).</div>
-      </div>
-      <button class="copy" data-copy="!buy ">Kopieren</button>
-    </li>
-  </ul>
-
-  <h3>🎮 Fun / Games</h3>
-
-  <!-- Split: Minigames / Currency / Shop vs Fun / Social -->
-  <div class="split">
-    <div class="subpanel">
-      <h3 style="margin-top:0;">🎮 Minigames / Currency</h3>
-      <ul>
-        <li class="cmd" data-text="!bet wetten betten">
-          <div class="cmd-left"><div class="cmd-code">!bet</div><div class="cmd-desc">Wett-Optionen anzeigen.</div></div>
-          <button class="copy" data-copy="!bet">Kopieren</button>
-        </li>
-
-        <li class="cmd" data-text="!bet rot/schwarz">
-          <div class="cmd-left"><div class="cmd-code">!bet &lt;betrag&gt; rot/schwarz</div><div class="cmd-desc">Auf rot oder schwarz wetten. (Roulette muss von Mod gestartet werden)</div></div>
-          <button class="copy" data-copy="!bet ">Kopieren</button>
-        </li>
-
-        <li class="cmd" data-text="!zeni currency geld">
-          <div class="cmd-left"><div class="cmd-code">!zeni</div><div class="cmd-desc">Aktuelle Currency anzeigen.</div></div>
-          <button class="copy" data-copy="!zeni">Kopieren</button>
-        </li>
-
-        <li class="cmd" data-text="!leaderboard ranking bestenliste">
-          <div class="cmd-left"><div class="cmd-code">!leaderboard</div><div class="cmd-desc">Bestenliste anzeigen.</div></div>
-          <button class="copy" data-copy="!leaderboard">Kopieren</button>
-        </li>
-
-        <li class="cmd" data-text="!slots slotmaschine">
-          <div class="cmd-left"><div class="cmd-code">!slots &lt;betrag&gt;</div><div class="cmd-desc">Slotmaschine spielen.</div></div>
-          <button class="copy" data-copy="!slots ">Kopieren</button>
-        </li>
-
-        <li class="cmd" data-text="!shop shop">
-          <div class="cmd-left"><div class="cmd-code">!shop</div><div class="cmd-desc">Shop öffnen/anzeigen.</div></div>
-          <button class="copy" data-copy="!shop">Kopieren</button>
-        </li>
-
-        <li class="cmd" data-text="!attack user">
-        <div class="cmd-left"><div class="cmd-code">!attack &lt;user&gt;</div><div class="cmd-desc">Greift einen User an (nur wenn Combat aktiv ist).</div></div>
-        <button class="copy" data-copy="!attack ">Kopieren</button>
-      </li>
-
-      <li class="cmd" data-text="!sling winkel power">
-        <div class="cmd-left"><div class="cmd-code">!sling &lt;winkel&gt; [power]</div><div class="cmd-desc">Schleudert (z.B. <b>!sling -75 100</b>) – nur wenn aktiv.</div></div>
-        <button class="copy" data-copy="!sling ">Kopieren</button>
-      </li>
-      </ul>
-    </div>
-
-    <div class="subpanel">
-      <h3 style="margin-top:0;">💥 Fun / Social / Actions</h3>
-      <ul>
-        <li class="cmd" data-text="!bomb bomb">
-          <div class="cmd-left"><div class="cmd-code">!bomb</div><div class="cmd-desc">Bomb-Event (je nach Setup).</div></div>
-          <button class="copy" data-copy="!bomb">Kopieren</button>
-        </li>
-
-        <li class="cmd" data-text="!bomb user">
-          <div class="cmd-left"><div class="cmd-code">!bomb &lt;user&gt;</div><div class="cmd-desc">Bomb-Event auf User (je nach Setup).</div></div>
-          <button class="copy" data-copy="!bomb ">Kopieren</button>
-        </li>
-
-        <li class="cmd" data-text="!dance">
-          <div class="cmd-left"><div class="cmd-code">!dance</div><div class="cmd-desc">Tanzen.</div></div>
-          <button class="copy" data-copy="!dance">Kopieren</button>
-        </li>
-
-        <li class="cmd" data-text="!duell duel user bet amount">
-          <div class="cmd-left"><div class="cmd-code">!duell &lt;user&gt; &lt;betrag&gt;</div><div class="cmd-desc">Duell um Currency.</div></div>
-          <button class="copy" data-copy="!duell ">Kopieren</button>
-        </li>
-
-        <li class="cmd" data-text="!extension extension">
-          <div class="cmd-left"><div class="cmd-code">!extension</div><div class="cmd-desc">Info/Link zur Extension (falls aktiv).</div></div>
-          <button class="copy" data-copy="!extension">Kopieren</button>
-        </li>
-
-        <li class="cmd" data-text="!fart furz">
-          <div class="cmd-left"><div class="cmd-code">!fart</div><div class="cmd-desc">…ja. 😄</div></div>
-          <button class="copy" data-copy="!fart">Kopieren</button>
-        </li>
-
-        <li class="cmd" data-text="!hideavatar hide avatar">
-          <div class="cmd-left"><div class="cmd-code">!hideavatar</div><div class="cmd-desc">Eigenen Avatar verstecken.</div></div>
-          <button class="copy" data-copy="!hideavatar">Kopieren</button>
-        </li>
-
-        <li class="cmd" data-text="!hug user avatars">
-          <div class="cmd-left"><div class="cmd-code">!hug &lt;user&gt;</div><div class="cmd-desc">Avatar-Hug.</div></div>
-          <button class="copy" data-copy="!hug ">Kopieren</button>
-        </li>
-
-        <li class="cmd" data-text="!jump">
-          <div class="cmd-left"><div class="cmd-code">!jump</div><div class="cmd-desc">Springen.</div></div>
-          <button class="copy" data-copy="!jump">Kopieren</button>
-        </li>
-
-        <li class="cmd" data-text="!show show">
-          <div class="cmd-left"><div class="cmd-code">!show</div><div class="cmd-desc">Show/Anzeige (je nach Setup).</div></div>
-          <button class="copy" data-copy="!show">Kopieren</button>
-        </li>
-      </ul>
+      <button class="langbtn" id="langBtn" type="button"></button>
     </div>
   </div>
-</section>
-        <!-- ================= SPIELBEFEHLE: MOD-LISTEN ================= -->
-<section data-cat="games">
-  <h2>🧩Meine Mod-Listen zu diversen Games</h2>
 
-  <ul>
-    <li class="cmd" data-text="!fallout4 mods modliste mod tabelle fallout 4">
-      <div class="cmd-left"><div class="cmd-code">!fallout4</div><div class="cmd-desc">Postet den Link zur Fallout 4 Mod-Tabelle (alle Mods + Links).</div></div>
-      <button class="copy" data-copy="!fallout4">Kopieren</button>
-    </li>
+  <div class="layout">
+    <aside class="sidenav" id="sectionNav" aria-label="Kategorien"></aside>
 
-    <li class="cmd" data-text="!falloutnv mods modliste mod tabelle fallout new vegas fnv">
-      <div class="cmd-left"><div class="cmd-code">!falloutnv</div><div class="cmd-desc">Postet den Link zur Fallout: New Vegas Mod-Tabelle (alle Mods + Links).</div></div>
-      <button class="copy" data-copy="!falloutnv">Kopieren</button>
-    </li>
-
-    <li class="cmd" data-text="!morroblivion mods modliste mod tabelle morroblivion">
-      <div class="cmd-left"><div class="cmd-code">!morroblivion</div><div class="cmd-desc">Postet den Link zur Morroblivion Mod-Tabelle (alle Mods + Links).</div></div>
-      <button class="copy" data-copy="!morroblivion">Kopieren</button>
-    </li>
-
-    <li class="cmd" data-text="!planetcrafter mods modliste mod tabelle planet crafter">
-      <div class="cmd-left"><div class="cmd-code">!planetcrafter</div><div class="cmd-desc">Postet den Link zur Planet Crafter Mod-Tabelle (alle Mods + Links).</div></div>
-      <button class="copy" data-copy="!planetcrafter">Kopieren</button>
-    </li>
-
-    <li class="cmd" data-text="!skyrimse mods modliste mod tabelle skyrim se special edition">
-      <div class="cmd-left"><div class="cmd-code">!skyrimse</div><div class="cmd-desc">Postet den Link zur Skyrim SE Mod-Tabelle (alle Mods + Links).</div></div>
-      <button class="copy" data-copy="!skyrimse">Kopieren</button>
-    </li>
-
-    <li class="cmd" data-text="!supermarket mods modliste mod tabelle supermarket together">
-      <div class="cmd-left"><div class="cmd-code">!supermarket</div><div class="cmd-desc">Postet den Link zur Supermarket Together Mod-Tabelle (alle Mods + Links).</div></div>
-      <button class="copy" data-copy="!supermarket">Kopieren</button>
-    </li>
-
-    <li class="cmd" data-text="!tcgcss mods modliste mod tabelle tcg card shop simulator">
-      <div class="cmd-left"><div class="cmd-code">!tcgcss</div><div class="cmd-desc">Postet den Link zur TCG Card Shop Simulator Mod-Tabelle (alle Mods + Links).</div></div>
-      <button class="copy" data-copy="!tcgcss">Kopieren</button>
-    </li>
-  </ul>
-</section>
-        <!-- ================= SPIELBEFEHLE: WEED SHOP ================= -->
-        <section data-cat="games">
-          <h2>🌿 Weed Shop 3 (Game Commands)</h2>
-
-          <h3>📌 Basics</h3>
-          <ul>
-            <li class="cmd" data-text="#dowhatnow help commands">
-              <div class="cmd-left"><div class="cmd-code">#dowhatnow</div><div class="cmd-desc">Zeigt alle verfügbaren Weed Shop Commands.</div></div>
-              <button class="copy" data-copy="#dowhatnow">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="#gethigh high">
-              <div class="cmd-left"><div class="cmd-code">#gethigh</div><div class="cmd-desc">Charakter wird high 😄</div></div>
-              <button class="copy" data-copy="#gethigh">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="#mynameis rename name">
-              <div class="cmd-left"><div class="cmd-code">#mynameis</div><div class="cmd-desc">Ändert deinen Namen (wenn assigned).</div></div>
-              <button class="copy" data-copy="#mynameis">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="#say text speak">
-              <div class="cmd-left"><div class="cmd-code">#say &lt;text&gt;</div><div class="cmd-desc">Text über dem Charakter anzeigen.</div></div>
-              <button class="copy" data-copy="#say ">Kopieren</button>
-            </li>
-          </ul>
-
-          <h3>👤 Customer / Character Management</h3>
-          <ul>
-            <li class="cmd" data-text="#assign assign username customer name">
-              <div class="cmd-left"><div class="cmd-code">#assign @Username Customer Name</div><div class="cmd-desc">User einem Customer zuweisen.</div></div>
-              <button class="copy" data-copy="#assign ">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="#assignrandom assign random username">
-              <div class="cmd-left"><div class="cmd-code">#assignrandom @Username</div><div class="cmd-desc">Random Customer zuweisen.</div></div>
-              <button class="copy" data-copy="#assignrandom ">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="#remove remove customer name">
-              <div class="cmd-left"><div class="cmd-code">#remove Customer Name</div><div class="cmd-desc">Customer entfernen.</div></div>
-              <button class="copy" data-copy="#remove ">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="#rename rename customer new name">
-              <div class="cmd-left"><div class="cmd-code">#rename Customers Name&gt;New Customer Name</div><div class="cmd-desc">Customer umbenennen.</div></div>
-              <button class="copy" data-copy="#rename ">Kopieren</button>
-            </li>
-          </ul>
-
-          <h3>🎬 Actions / Fun</h3>
-          <ul>
-            <li class="cmd" data-text="#bounce bounce beachball">
-              <div class="cmd-left"><div class="cmd-code">#bounce</div><div class="cmd-desc">Beachballs bouncen.</div></div>
-              <button class="copy" data-copy="#bounce">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="#holdmydildo number amount">
-              <div class="cmd-left"><div class="cmd-code">#holdmydildo &lt;amount&gt;</div><div class="cmd-desc">Droppt Dildos (z.B. #holdmydildo 50).</div></div>
-              <button class="copy" data-copy="#holdmydildo ">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="#jump jump">
-              <div class="cmd-left"><div class="cmd-code">#jump</div><div class="cmd-desc">Springen.</div></div>
-              <button class="copy" data-copy="#jump">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="#makeit weather">
-              <div class="cmd-left"><div class="cmd-code">#makeit</div><div class="cmd-desc">Wetter ändern (mit Voraussetzung/Spot).</div></div>
-              <button class="copy" data-copy="#makeit">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="#popoff fireworks">
-              <div class="cmd-left"><div class="cmd-code">#popoff</div><div class="cmd-desc">Feuerwerk.</div></div>
-              <button class="copy" data-copy="#popoff">Kopieren</button>
-            </li>
-
-            <li class="cmd" data-text="#pullup pull up thief">
-              <div class="cmd-left"><div class="cmd-code">#pullup</div><div class="cmd-desc">Viewer spawnt als Thief (Cooldown beachten).</div></div>
-              <button class="copy" data-copy="#pullup">Kopieren</button>
-            </li>
-          </ul>
-        </section>
-
-        <!-- ================= MOD TAB CONTENT (SECRET): Core Mods + Mod Sounds + Death Counter + Stream Avatars Mod/Admin ================= -->
-        <!-- ================= MOD TAB CONTENT (SECRET): 3 Blöcke + 1 Full-Width ================= -->
-<section data-cat="mod" data-secret="1">
-  <h2>🛡️ Mod / Admin</h2>
-
-  <!-- 3 gleichwertige Blöcke -->
-  <div class="split modgrid-3">
-    <div class="subpanel">
-      <h3>Core Mod Commands</h3>
-      <ul>
-        <li class="cmd" data-text="!emergency emergency mode">
-          <div class="cmd-left"><div class="cmd-code">!emergency</div><div class="cmd-desc">Emergency Mode aktivieren.</div></div>
-          <button class="copy" data-copy="!emergency">Kopieren</button>
-        </li>
-
-        <li class="cmd" data-text="!emergencyover emergency aus">
-          <div class="cmd-left"><div class="cmd-code">!emergencyover</div><div class="cmd-desc">Emergency Mode deaktivieren.</div></div>
-          <button class="copy" data-copy="!emergencyover">Kopieren</button>
-        </li>
-
-        <li class="cmd" data-text="!raid raid user">
-          <div class="cmd-left"><div class="cmd-code">!raid &lt;user&gt;</div><div class="cmd-desc">Raid-Message / Raid-Start (je nach Setup).</div></div>
-          <button class="copy" data-copy="!raid ">Kopieren</button>
-        </li>
-
-        <li class="cmd" data-text="!brb pause szene obs clips weg kurz zurück gleich mod">
-          <div class="cmd-left"><div class="cmd-code">!brb</div><div class="cmd-desc">Wechselt zur Pause-Szene.</div></div>
-          <button class="copy" data-copy="!brb">Kopieren</button>
-        </li>
+    <main id="grid">
 
 
-        <li class="cmd" data-text="!setgame game spiel">
-          <div class="cmd-left"><div class="cmd-code">!setgame &lt;game&gt;</div><div class="cmd-desc">Setzt das aktuell gespielte Spiel.</div></div>
-          <button class="copy" data-copy="!setgame ">Kopieren</button>
-        </li>
+      <!-- ================= CHAT / INFO / FUN ================= -->
+      <section class="sec" data-cat="core" id="fun">
+        <header class="sec-head"><span class="sec-ico">🎮</span><h2 data-en="Fun / Interaction">Fun / Interaktion</h2></header>
+      <div class="group">
+        <ul class="cmds">
+          <li class="cmd" data-text="!afk weg kurz">
+            <div class="cmd-left"><div class="cmd-code">!afk</div><div class="cmd-desc">Sagt dem Chat, dass du kurz weg bist (AFK).</div><div class="cmd-desc-en">Tells the chat that you're away for a bit (AFK).</div></div>
+            <button class="copy" data-copy="!afk">Kopieren</button>
+          </li>
 
-        <li class="cmd" data-text="!setso shoutout setzen user">
-          <div class="cmd-left"><div class="cmd-code">!setso &lt;user&gt;</div><div class="cmd-desc">Setzt einen Custom Shoutout-Text für &lt;user&gt;.</div></div>
-          <button class="copy" data-copy="!setso ">Kopieren</button>
-        </li>
+          <li class="cmd" data-text="!back zurück da">
+            <div class="cmd-left"><div class="cmd-code">!back</div><div class="cmd-desc">Sagt dem Chat, dass du wieder da bist (nicht mehr afk/lurk).</div><div class="cmd-desc-en">Tells the chat that you're back (no longer AFK/lurking).</div></div>
+            <button class="copy" data-copy="!back">Kopieren</button>
+          </li>
 
-        <li class="cmd" data-text="!settitle titel">
-          <div class="cmd-left"><div class="cmd-code">!settitle &lt;title&gt;</div><div class="cmd-desc">Setzt den Streamtitel.</div></div>
-          <button class="copy" data-copy="!settitle ">Kopieren</button>
-        </li>
+          <li class="cmd" data-text="!boop user">
+            <div class="cmd-left"><div class="cmd-code">!boop &lt;user&gt;</div><div class="cmd-desc">Boop den &lt;user&gt;.</div><div class="cmd-desc-en">Boops &lt;user&gt;.</div></div>
+            <button class="copy" data-copy="!boop ">Kopieren</button>
+          </li>
 
-        <li class="cmd" data-text="!so shoutout user">
-          <div class="cmd-left"><div class="cmd-code">!so &lt;user&gt;</div><div class="cmd-desc">Gibt einen Shoutout im Chat aus.</div></div>
-          <button class="copy" data-copy="!so ">Kopieren</button>
-        </li>
+          <li class="cmd" data-text="!cuddle user kuscheln">
+            <div class="cmd-left"><div class="cmd-code">!cuddle &lt;user&gt;</div><div class="cmd-desc">Kuschelt den &lt;user&gt; für dich.</div><div class="cmd-desc-en">Cuddles &lt;user&gt; for you.</div></div>
+            <button class="copy" data-copy="!cuddle ">Kopieren</button>
+          </li>
 
-        <li class="cmd" data-text="!vso video shoutout user">
-          <div class="cmd-left"><div class="cmd-code">!vso &lt;user&gt;</div><div class="cmd-desc">Video-Shoutout (wenn eingerichtet).</div></div>
-          <button class="copy" data-copy="!vso ">Kopieren</button>
-        </li>
-      </ul>
-    </div>
+          <li class="cmd" data-text="!dance user tanzen">
+            <div class="cmd-left"><div class="cmd-code">!dance &lt;user&gt;</div><div class="cmd-desc">Du tanzt mit dem &lt;user&gt;.</div><div class="cmd-desc-en">You dance with &lt;user&gt;.</div></div>
+            <button class="copy" data-copy="!dance ">Kopieren</button>
+          </li>
 
-    <div class="subpanel">
-      <h3>☠️ Death Counter (Mod)</h3>
-      <ul>
-        <li class="cmd" data-text="!death+ tod hinzufügen">
-          <div class="cmd-left"><div class="cmd-code">!death+</div><div class="cmd-desc">Fügt dem aktuellen Spiel <b>und</b> der Gesamtzahl einen Tod hinzu.</div></div>
-          <button class="copy" data-copy="!death+">Kopieren</button>
-        </li>
+          <li class="cmd" data-text="!fistbump user">
+            <div class="cmd-left"><div class="cmd-code">!fistbump &lt;user&gt;</div><div class="cmd-desc">Gibt dem &lt;user&gt; einen Fistbump.</div><div class="cmd-desc-en">Gives &lt;user&gt; a fist bump.</div></div>
+            <button class="copy" data-copy="!fistbump ">Kopieren</button>
+          </li>
 
-        <li class="cmd" data-text="!death- tod entfernen">
-          <div class="cmd-left"><div class="cmd-code">!death-</div><div class="cmd-desc">Entfernt einen Tod aus dem aktuellen Spiel <b>und</b> aus der Gesamtzahl.</div></div>
-          <button class="copy" data-copy="!death-">Kopieren</button>
-        </li>
+          <li class="cmd" data-text="!headpat user">
+            <div class="cmd-left"><div class="cmd-code">!headpat &lt;user&gt;</div><div class="cmd-desc">Lobt den &lt;user&gt; mit einem Headpat.</div><div class="cmd-desc-en">Praises &lt;user&gt; with a headpat.</div></div>
+            <button class="copy" data-copy="!headpat ">Kopieren</button>
+          </li>
 
-        <li class="cmd" data-text="!deathsset number tode setzen">
-          <div class="cmd-left"><div class="cmd-code">!deathsset &lt;number&gt;</div><div class="cmd-desc">Legt die Anzahl der Tode fest.</div></div>
-          <button class="copy" data-copy="!deathsset ">Kopieren</button>
-        </li>
+          <li class="cmd" data-text="!highfive user high five">
+            <div class="cmd-left"><div class="cmd-code">!highfive &lt;user&gt;</div><div class="cmd-desc">High Five für den &lt;user&gt;.</div><div class="cmd-desc-en">High five for &lt;user&gt;.</div></div>
+            <button class="copy" data-copy="!highfive ">Kopieren</button>
+          </li>
 
-        <li class="cmd" data-text="!deathsreset number reset aktuelles spiel">
-          <div class="cmd-left"><div class="cmd-code">!deathsreset &lt;number&gt;</div><div class="cmd-desc">Setzt die Todesfälle im aktuellen Spiel auf &lt;number&gt; zurück (und synchronisiert Overlay/Counter).</div></div>
-          <button class="copy" data-copy="!deathsreset ">Kopieren</button>
-        </li>
+          <li class="cmd" data-text="!hug user umarmung">
+            <div class="cmd-left"><div class="cmd-code">!hug &lt;user&gt;</div><div class="cmd-desc">Umarmt den &lt;user&gt;.</div><div class="cmd-desc-en">Hugs &lt;user&gt;.</div></div>
+            <button class="copy" data-copy="!hug ">Kopieren</button>
+          </li>
 
-        <li class="cmd" data-text="!deathresettotal reset total gesamt">
-          <div class="cmd-left"><div class="cmd-code">!deathresettotal</div><div class="cmd-desc">Setzt die <b>Gesamt</b>-Tode auf 0 (pro Spiel bleibt unverändert).</div></div>
-          <button class="copy" data-copy="!deathresettotal">Kopieren</button>
-        </li>
-      </ul>
-    </div>
+          <li class="cmd" data-text="!love input liebe">
+            <div class="cmd-left"><div class="cmd-code">!love &lt;input&gt;</div><div class="cmd-desc">Fragt den Bot, wie sehr du &lt;input&gt; liebst.</div><div class="cmd-desc-en">Asks the bot how much you love &lt;input&gt;.</div></div>
+            <button class="copy" data-copy="!love ">Kopieren</button>
+          </li>
 
-    <div class="subpanel">
-      <h3>🔊 Mod Sounds</h3>
-      <ul>
-        <li class="cmd" data-text="!boa sound">
-          <div class="cmd-left"><div class="cmd-code">!boa</div><div class="cmd-desc">Spielt den „Boa“-Sound ab.</div></div>
-          <button class="copy" data-copy="!boa">Kopieren</button>
-        </li>
+          <li class="cmd" data-text="!lurk lurking">
+            <div class="cmd-left"><div class="cmd-code">!lurk</div><div class="cmd-desc">Sagt dem Chat, dass du lurkst.</div><div class="cmd-desc-en">Tells the chat that you're lurking.</div></div>
+            <button class="copy" data-copy="!lurk">Kopieren</button>
+          </li>
 
-        <li class="cmd" data-text="!dboa sound">
-          <div class="cmd-left"><div class="cmd-code">!dboa</div><div class="cmd-desc">Spielt den „Doppel-Boa“-Sound ab.</div></div>
-          <button class="copy" data-copy="!dboa">Kopieren</button>
-        </li>
+          <li class="cmd" data-text="!münzwurf coinflip münze">
+            <div class="cmd-left"><div class="cmd-code">!münzwurf</div><div class="cmd-desc">Wirft eine Münze: Kopf oder Zahl.</div><div class="cmd-desc-en">Flips a coin: heads or tails.</div></div>
+            <button class="copy" data-copy="!münzwurf">Kopieren</button>
+          </li>
 
-        <li class="cmd" data-text="gyst sound get your shit together">
-          <div class="cmd-left"><div class="cmd-code">gyst</div><div class="cmd-desc">„Get your sh*t together“-Sound.</div></div>
-          <button class="copy" data-copy="GYST">Kopieren</button>
-        </li>
+          <li class="cmd" data-text="!punch faust punch kamera animation">
+            <div class="cmd-left"><div class="cmd-code">!punch</div><div class="cmd-desc">Punch in leech's Gesicht. 😄 (nur VIP's &amp; Subscribers)</div><div class="cmd-desc-en">Punch leech in the face. 😄</div></div>
+            <button class="copy" data-copy="!punch">Kopieren</button>
+          </li>
 
-        <li class="cmd" data-text="!hm sound motherfucker">
-          <div class="cmd-left"><div class="cmd-code">!hm</div><div class="cmd-desc">„Hello Motherf*cker“-Sound.</div></div>
-          <button class="copy" data-copy="!hm">Kopieren</button>
-        </li>
+          <li class="cmd" data-text="!roll würfeln dice">
+            <div class="cmd-left"><div class="cmd-code">!roll</div><div class="cmd-desc">Würfelt einen normalen 6-seitigen Würfel.</div><div class="cmd-desc-en">Rolls a regular 6-sided die.</div></div>
+            <button class="copy" data-copy="!roll">Kopieren</button>
+          </li>
 
-        <li class="cmd" data-text="!klaus kinsky sound">
-          <div class="cmd-left"><div class="cmd-code">!klaus</div><div class="cmd-desc">Spielt einen zufälligen Kinsky-Sound ab.</div></div>
-          <button class="copy" data-copy="!klaus">Kopieren</button>
-        </li>
+          <li class="cmd" data-text="!tickle user kitzeln">
+            <div class="cmd-left"><div class="cmd-code">!tickle &lt;user&gt;</div><div class="cmd-desc">Kitzelt den &lt;user&gt;.</div><div class="cmd-desc-en">Tickles &lt;user&gt;.</div></div>
+            <button class="copy" data-copy="!tickle ">Kopieren</button>
+          </li>
+        </ul>
+      </div>
+      </section>
 
-        <li class="cmd" data-text="!zonk zonk fail sound">
-              <div class="cmd-left"><div class="cmd-code">!zonk</div><div class="cmd-desc">Spielt den „Zonk“-Sound ab.</div></div>
-              <button class="copy" data-copy="!zonk">Kopieren</button>
-            </li>
+      <section class="sec" data-cat="core" id="sounds">
+        <header class="sec-head"><span class="sec-ico">🔊</span><h2>Sounds / Memes</h2></header>
+      <div class="group">
+        <ul class="cmds">
+          <li class="cmd" data-text="!boa sound">
+            <div class="cmd-left"><div class="cmd-code">!boa</div><div class="cmd-desc">Spielt den „Boa“-Sound ab. (nur VIP's)</div><div class="cmd-desc-en">Plays the “Boa” sound.</div></div>
+            <button class="copy" data-copy="!boa">Kopieren</button>
+          </li>
 
-        <li class="cmd" data-text="!nee ne sound meme">
-            <div class="cmd-left"><div class="cmd-code">!nee</div><div class="cmd-desc">Spielt den „Ne…Näh“-Sound ab.</div></div>
+          <li class="cmd" data-text="!bye !cya sound">
+            <div class="cmd-left"><div class="cmd-code">!bye</div><div class="cmd-desc">Spielt den „Bye“-Sound ab.</div><div class="cmd-desc-en">Plays the “Bye” sound.</div></div>
+            <button class="copy" data-copy="!bye">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!cya !bye sound">
+            <div class="cmd-left"><div class="cmd-code">!cya</div><div class="cmd-desc">Spielt ebenfalls den „Bye“-Sound ab.</div><div class="cmd-desc-en">Also plays the “Bye” sound.</div></div>
+            <button class="copy" data-copy="!cya">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!dboa sound">
+            <div class="cmd-left"><div class="cmd-code">!dboa</div><div class="cmd-desc">Spielt den „Doppel-Boa“-Sound ab. (nur VIP's)</div><div class="cmd-desc-en">Plays the “Double Boa” sound.</div></div>
+            <button class="copy" data-copy="!dboa">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!dere !hallo sound">
+            <div class="cmd-left"><div class="cmd-code">!dere</div><div class="cmd-desc">Spielt einen „Hallo“-Sound ab.</div><div class="cmd-desc-en">Plays a “Hello” sound.</div></div>
+            <button class="copy" data-copy="!dere">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!fail zonk fail sound">
+            <div class="cmd-left"><div class="cmd-code">!fail</div><div class="cmd-desc">Spielt den „Zonk“-Sound ab.</div><div class="cmd-desc-en">Plays the “Zonk” (fail) sound.</div></div>
+            <button class="copy" data-copy="!fail">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="gyst sound get your shit together">
+            <div class="cmd-left"><div class="cmd-code">gyst</div><div class="cmd-desc">„Get your sh*t together“-Sound. (nur VIP's)</div><div class="cmd-desc-en">“Get your sh*t together” sound.</div></div>
+            <button class="copy" data-copy="GYST">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!hallo !dere sound">
+            <div class="cmd-left"><div class="cmd-code">!hallo</div><div class="cmd-desc">Spielt ebenfalls einen „Hallo“-Sound ab.</div><div class="cmd-desc-en">Also plays a “Hello” sound.</div></div>
+            <button class="copy" data-copy="!hallo">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!hm sound motherfucker">
+            <div class="cmd-left"><div class="cmd-code">!hm</div><div class="cmd-desc">„Hello Motherf*cker“-Sound. (nur VIP's &amp; Subscribers)</div><div class="cmd-desc-en">“Hello Motherf*cker” sound.</div></div>
+            <button class="copy" data-copy="!hm">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!klaus kinsky sound">
+            <div class="cmd-left"><div class="cmd-code">!klaus</div><div class="cmd-desc">Spielt einen zufälligen Kinsky-Sound ab. (nur VIP's &amp; Subscribers)</div><div class="cmd-desc-en">Plays a random Kinsky sound.</div></div>
+            <button class="copy" data-copy="!klaus">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="lezduit sound">
+            <div class="cmd-left"><div class="cmd-code">LEZDUIT</div><div class="cmd-desc">Selbsterklärend 😄 (nur VIP's)</div><div class="cmd-desc-en">Self-explanatory 😄</div></div>
+            <button class="copy" data-copy="LEZDUIT">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!nee ne sound meme">
+            <div class="cmd-left"><div class="cmd-code">!nee</div><div class="cmd-desc">Spielt den „Ne…Näh“-Sound ab. (nur VIP's &amp; Subscribers)</div><div class="cmd-desc-en">Plays the “Ne…Näh” sound.</div></div>
             <button class="copy" data-copy="!nee">Kopieren</button>
-        </li>
+          </li>
 
-        <li class="cmd" data-text="lezduit sound">
-              <div class="cmd-left"><div class="cmd-code">LEZDUIT</div><div class="cmd-desc">Selbsterklärend 😄</div></div>
-              <button class="copy" data-copy="LEZDUIT">Kopieren</button>
-            </li>
+          <li class="cmd" data-text="!nice !noice sound">
+            <div class="cmd-left"><div class="cmd-code">!nice</div><div class="cmd-desc">Spielt den „Nice“-Sound ab.</div><div class="cmd-desc-en">Plays the “Nice” sound.</div></div>
+            <button class="copy" data-copy="!nice">Kopieren</button>
+          </li>
 
-        <li class="cmd" data-text="!schande glocke sound">
-          <div class="cmd-left"><div class="cmd-code">!schande</div><div class="cmd-desc">Läutet die „Schande“-Glocke.</div></div>
-          <button class="copy" data-copy="!schande">Kopieren</button>
-        </li>
-      </ul>
-    </div>
-  </div>
+          <li class="cmd" data-text="!noice !nice sound">
+            <div class="cmd-left"><div class="cmd-code">!noice</div><div class="cmd-desc">Spielt ebenfalls den „Nice“-Sound ab.</div><div class="cmd-desc-en">Also plays the “Nice” sound.</div></div>
+            <button class="copy" data-copy="!noice">Kopieren</button>
+          </li>
 
-  <!-- Full-Width Block darunter -->
-  <div class="subpanel" style="margin-top:12px;">
-    <h3>Stream Avatars – Mod / Admin</h3>
-    <div class="split">
-  <div class="subpanel">
-    <h3 style="margin-top:0;">⚙️ Utility / Currency / Fairness</h3>
-    <ul>
-      <li class="cmd" data-text="!play sounds liste">
-        <div class="cmd-left"><div class="cmd-code">!play</div><div class="cmd-desc">Zeigt die Soundliste (falls aktiv).</div></div>
-        <button class="copy" data-copy="!play">Kopieren</button>
-      </li>
-
-      <li class="cmd" data-text="!play soundname sound abspielen">
-        <div class="cmd-left"><div class="cmd-code">!play &lt;soundname&gt;</div><div class="cmd-desc">Spielt einen Sound (falls aktiv).</div></div>
-        <button class="copy" data-copy="!play ">Kopieren</button>
-      </li>
-
-      <li class="cmd" data-text="!scale user factor sek">
-        <div class="cmd-left"><div class="cmd-code">!scale &lt;user&gt; &lt;factor&gt; &lt;sek&gt;</div><div class="cmd-desc">Skaliert einen Avatar temporär (z.B. 0.5 für 120s).</div></div>
-        <button class="copy" data-copy="!scale ">Kopieren</button>
-      </li>
-
-      <li class="cmd" data-text="!screensaver sek">
-        <div class="cmd-left"><div class="cmd-code">!screensaver &lt;sek&gt;</div><div class="cmd-desc">Startet Screensaver für X Sekunden (wenn aktiv).</div></div>
-        <button class="copy" data-copy="!screensaver ">Kopieren</button>
-      </li>
-
-      <li class="cmd" data-text="!cancel stop screensaver">
-        <div class="cmd-left"><div class="cmd-code">!cancel</div><div class="cmd-desc">Bricht den Screensaver/aktive Aktion ab (wenn unterstützt).</div></div>
-        <button class="copy" data-copy="!cancel">Kopieren</button>
-      </li>
-
-      <li class="cmd" data-text="!zeni give user amount">
-        <div class="cmd-left"><div class="cmd-code">!zeni give &lt;user&gt; &lt;amount&gt;</div><div class="cmd-desc">Gibt Zeni an einen User.</div></div>
-        <button class="copy" data-copy="!zeni give ">Kopieren</button>
-      </li>
-
-      <li class="cmd" data-text="!zeni add all amount">
-        <div class="cmd-left"><div class="cmd-code">!zeni add all &lt;amount&gt;</div><div class="cmd-desc">Gibt allen Zeni (z.B. Event-Rewards).</div></div>
-        <button class="copy" data-copy="!zeni add all ">Kopieren</button>
-      </li>
-
-      <li class="cmd" data-text="!zeni remove user amount">
-        <div class="cmd-left"><div class="cmd-code">!zeni remove &lt;user&gt; &lt;amount&gt;</div><div class="cmd-desc">Entzieht einem User Zeni.</div></div>
-        <button class="copy" data-copy="!zeni remove ">Kopieren</button>
-      </li>
-
-      <li class="cmd" data-text="!game exclude user">
-        <div class="cmd-left"><div class="cmd-code">!game exclude &lt;user&gt;</div><div class="cmd-desc">Schließt User von Minigames aus.</div></div>
-        <button class="copy" data-copy="!game exclude ">Kopieren</button>
-      </li>
-
-      <li class="cmd" data-text="!leaderboard exclude user">
-        <div class="cmd-left"><div class="cmd-code">!leaderboard exclude &lt;user&gt;</div><div class="cmd-desc">Schließt User vom Leaderboard aus.</div></div>
-        <button class="copy" data-copy="!leaderboard exclude ">Kopieren</button>
-      </li>
-
-      <li class="cmd" data-text="!background background">
-          <div class="cmd-left"><div class="cmd-code">!background</div><div class="cmd-desc">Hintergrund anzeigen/ändern (je nach Setup).</div></div>
-          <button class="copy" data-copy="!background">Kopieren</button>
-        </li>
-
-        <li class="cmd" data-text="!background none">
-          <div class="cmd-left"><div class="cmd-code">!background none</div><div class="cmd-desc">Hintergrund entfernen.</div></div>
-          <button class="copy" data-copy="!background none">Kopieren</button>
-        </li>
-    </ul>
-  </div>
-
-  <div class="subpanel">
-    <h3 style="margin-top:0;">🎯 Targeted Actions / Boss Control</h3>
-    <ul>
-      <li class="cmd" data-text="!boss difficulty reward">
-        <div class="cmd-left"><div class="cmd-code">!boss &lt;difficulty&gt; &lt;reward&gt;</div><div class="cmd-desc">Startet Boss mit Schwierigkeit + Reward (z.B. <b>!boss schwer 1000</b>).</div></div>
-        <button class="copy" data-copy="!boss ">Kopieren</button>
-      </li>
-
-      <li class="cmd" data-text="!boss boss">
-          <div class="cmd-left"><div class="cmd-code">!boss</div><div class="cmd-desc">Boss-Event starten (wenn aktiv).</div></div>
-          <button class="copy" data-copy="!boss">Kopieren</button>
-        </li>
-
-      <li class="cmd" data-text="!boss abbrechen cancel stop">
-        <div class="cmd-left"><div class="cmd-code">!boss abbrechen</div><div class="cmd-desc">Stoppt/abbricht einen laufenden Bossfight.</div></div>
-        <button class="copy" data-copy="!boss abbrechen">Kopieren</button>
-      </li>
-
-      <li class="cmd" data-text="!br battle royale starten">
-        <div class="cmd-left"><div class="cmd-code">!br</div><div class="cmd-desc">Startet ein Battle Royale.</div></div>
-        <button class="copy" data-copy="!br">Kopieren</button>
-      </li>
-
-      <li class="cmd" data-text="!br abbrechen cancel stop">
-        <div class="cmd-left"><div class="cmd-code">!br abbrechen</div><div class="cmd-desc">Stoppt ein laufendes Battle Royale.</div></div>
-        <button class="copy" data-copy="!br abbrechen">Kopieren</button>
-      </li>
-      
-      <li class="cmd" data-text="!explode user">
-        <div class="cmd-left"><div class="cmd-code">!explode &lt;user&gt;</div><div class="cmd-desc">Lässt einen User explodieren (Mod-Action).</div></div>
-        <button class="copy" data-copy="!explode ">Kopieren</button>
-      </li>
-
-      <li class="cmd" data-text="!firework user">
-        <div class="cmd-left"><div class="cmd-code">!firework &lt;user&gt;</div><div class="cmd-desc">Feuerwerk auf einen User (Mod-Action).</div></div>
-        <button class="copy" data-copy="!firework ">Kopieren</button>
-      </li>
-
-      <li class="cmd" data-text="!freeze user sek">
-        <div class="cmd-left"><div class="cmd-code">!freeze &lt;user&gt; &lt;sek&gt;</div><div class="cmd-desc">Freezt einen User für X Sekunden (z.B. <b>!freeze clonzeh 60</b>).</div></div>
-        <button class="copy" data-copy="!freeze ">Kopieren</button>
-      </li>
-
-      <li class="cmd" data-text="!basketball basketball">
-          <div class="cmd-left"><div class="cmd-code">!basketball</div><div class="cmd-desc">Startet Basketball-Game (wenn aktiv).</div></div>
-          <button class="copy" data-copy="!basketball">Kopieren</button>
-        </li>
-
-      <li class="cmd" data-text="!bet rot/schwarz">
-          <div class="cmd-left"><div class="cmd-code">!bet &lt;betrag&gt; rot/schwarz</div><div class="cmd-desc">Auf rot oder schwarz wetten. (Um ein Roulette zu starten)</div></div>
-          <button class="copy" data-copy="!bet ">Kopieren</button>
-        </li>
-
-      <li class="cmd" data-text="!pin user x y anchorx anchory">
-        <div class="cmd-left"><div class="cmd-code">!pin &lt;user&gt; x y anchorX anchorY</div><div class="cmd-desc">Pinnt/positioniert einen User (für Highlights / Kontrolle).</div></div>
-        <button class="copy" data-copy="!pin ">Kopieren</button>
-      </li>
-
-      <li class="cmd" data-text="!spawn name">
-        <div class="cmd-left"><div class="cmd-code">!spawn &lt;name&gt;</div><div class="cmd-desc">Spawnt ein Objekt/Setup (z.B. <b>!spawn game</b> wenn vorhanden).</div></div>
-        <button class="copy" data-copy="!spawn ">Kopieren</button>
-      </li>      
-    </ul>
-  </div>
-</div>
-  </div>
-</section>
-
-        <!-- HIER TEIL 4 EINFÜGEN -->
-      </div><!-- /grid -->
-
-      <div class="empty" id="empty">Keine Treffer. Versuch einen anderen Begriff 👀</div>
-
-      <div class="footer">
-        <div>© 2026 leech (ReaperLeech). All rights reserved. • Gears of Weed • leech's TwitchChat-Commands</div>
-        <div><a href="#top">zurück nach oben</a></div>
+          <li class="cmd" data-text="!schande glocke sound">
+            <div class="cmd-left"><div class="cmd-code">!schande</div><div class="cmd-desc">Läutet die „Schande“-Glocke. (nur VIP's)</div><div class="cmd-desc-en">Rings the “Shame” bell.</div></div>
+            <button class="copy" data-copy="!schande">Kopieren</button>
+          </li>
+        </ul>
       </div>
+      </section>
+
+      <section class="sec" data-cat="core" id="info">
+        <header class="sec-head"><span class="sec-ico">📌</span><h2>Chat / Stream Info</h2></header>
+      <div class="group">
+        <ul class="cmds">
+          <li class="cmd" data-text="!cmd befehle link">
+            <div class="cmd-left"><div class="cmd-code">!cmd</div><div class="cmd-desc">Sendet den Link zur Seite mit allen Befehlen.</div><div class="cmd-desc-en">Sends the link to the page with all commands.</div></div>
+            <button class="copy" data-copy="!cmd">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!commands befehle link">
+            <div class="cmd-left"><div class="cmd-code">!commands</div><div class="cmd-desc">Sendet den Link zur Seite mit allen Befehlen.</div><div class="cmd-desc-en">Sends the link to the page with all commands.</div></div>
+            <button class="copy" data-copy="!commands">Kopieren</button>
+          </li>
+
+          <!--
+          <li class="cmd" data-text="!created account erstellt datum">
+            <div class="cmd-left"><div class="cmd-code">!created</div><div class="cmd-desc">Zeigt das Erstellungsdatum des Twitch-Accounts (vom Viewer).</div><div class="cmd-desc-en">Shows the creation date of your Twitch account.</div></div>
+            <button class="copy" data-copy="!created">Kopieren</button>
+          </li>
+          -->
+
+          <li class="cmd" data-text="!date datum">
+            <div class="cmd-left"><div class="cmd-code">!date</div><div class="cmd-desc">Zeigt das aktuelle Datum (Streamer-Zeit).</div><div class="cmd-desc-en">Shows the current date (streamer time).</div></div>
+            <button class="copy" data-copy="!date">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!followage follow age">
+            <div class="cmd-left"><div class="cmd-code">!followage</div><div class="cmd-desc">Zeigt, wie lange der Viewer dem Streamer schon folgt.</div><div class="cmd-desc-en">Shows how long you've been following the streamer.</div></div>
+            <button class="copy" data-copy="!followage">Kopieren</button>
+          </li>
+
+          <!--
+          <li class="cmd" data-text="!followed followed date">
+            <div class="cmd-left"><div class="cmd-code">!followed</div><div class="cmd-desc">Zeigt das Datum, seit wann der Viewer folgt.</div><div class="cmd-desc-en">Shows the date since when you've been following.</div></div>
+            <button class="copy" data-copy="!followed">Kopieren</button>
+          </li>
+          -->
+
+          <!--
+          <li class="cmd" data-text="!followers follower count">
+            <div class="cmd-left"><div class="cmd-code">!followers</div><div class="cmd-desc">Gibt die Gesamtanzahl der Follower des Channels aus.</div><div class="cmd-desc-en">Shows the channel's total follower count.</div></div>
+            <button class="copy" data-copy="!followers">Kopieren</button>
+          </li>
+          -->
+
+          <li class="cmd" data-text="!musik musik song artist">
+            <div class="cmd-left"><div class="cmd-code">!musik</div><div class="cmd-desc">Postet den aktuellen Musik-Artist/Link (je nachdem was gerade läuft).</div><div class="cmd-desc-en">Posts the current music artist/link (depending on what's playing).</div></div>
+            <button class="copy" data-copy="!musik">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!stats status spiel titel uptime viewer">
+            <div class="cmd-left"><div class="cmd-code">!stats</div><div class="cmd-desc">Zeigt aktuelles Spiel, Streamtitel, Uptime und Viewer-Count.</div><div class="cmd-desc-en">Shows the current game, stream title, uptime and viewer count.</div></div>
+            <button class="copy" data-copy="!stats">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!time uhrzeit">
+            <div class="cmd-left"><div class="cmd-code">!time</div><div class="cmd-desc">Zeigt die aktuelle Uhrzeit (Streamer-Zeit).</div><div class="cmd-desc-en">Shows the current time (streamer time).</div></div>
+            <button class="copy" data-copy="!time">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!uptime live">
+            <div class="cmd-left"><div class="cmd-code">!uptime</div><div class="cmd-desc">Zeigt, wie lange der Stream bereits läuft.</div><div class="cmd-desc-en">Shows how long the stream has been live.</div></div>
+            <button class="copy" data-copy="!uptime">Kopieren</button>
+          </li>
+        </ul>
+      </div>
+      </section>
+
+      <section class="sec" data-cat="core" id="deaths">
+        <header class="sec-head"><span class="sec-ico">☠️</span><h2>Death Counter</h2></header>
+      <div class="group">
+        <ul class="cmds">
+          <li class="cmd" data-text="!death tode tod deaths aktuelles spiel">
+            <div class="cmd-left"><div class="cmd-code">!death</div><div class="cmd-desc">Zeigt die Gesamtanzahl der Tode im aktuellen Spiel an.</div><div class="cmd-desc-en">Shows the total number of deaths in the current game.</div></div>
+            <button class="copy" data-copy="!death">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!deaths tode total gesamt">
+            <div class="cmd-left"><div class="cmd-code">!deaths</div><div class="cmd-desc">Zeigt die Gesamtanzahl der Tode in allen Spielen an.</div><div class="cmd-desc-en">Shows the total number of deaths across all games.</div></div>
+            <button class="copy" data-copy="!deaths">Kopieren</button>
+          </li>
+        </ul>
+      </div>
+      </section>
+
+      <section class="sec" data-cat="core" id="links">
+        <header class="sec-head"><span class="sec-ico">🔗</span><h2>Links / Socials</h2></header>
+      <div class="group">
+        <ul class="cmds">
+          <!--
+          <li class="cmd" data-text="!clanfb clan facebook">
+            <div class="cmd-left"><div class="cmd-code">!clanfb</div><div class="cmd-desc">Sendet den Link zur Clan-Facebook-Seite.</div><div class="cmd-desc-en">Sends the link to the clan Facebook page.</div></div>
+            <button class="copy" data-copy="!clanfb">Kopieren</button>
+          </li>
+          -->
+
+          <!--
+          <li class="cmd" data-text="!claninsta clan insta instagram">
+            <div class="cmd-left"><div class="cmd-code">!claninsta</div><div class="cmd-desc">Sendet den Link zum Clan-Instagram.</div><div class="cmd-desc-en">Sends the link to the clan Instagram.</div></div>
+            <button class="copy" data-copy="!claninsta">Kopieren</button>
+          </li>
+          -->
+
+          <li class="cmd" data-text="!dc discord">
+            <div class="cmd-left"><div class="cmd-code">!dc</div><div class="cmd-desc">Sendet den Discord-Einladungslink.</div><div class="cmd-desc-en">Sends the Discord invite link.</div></div>
+            <button class="copy" data-copy="!dc">Kopieren</button>
+          </li>
+
+          <!--
+          <li class="cmd" data-text="!facebook fb">
+            <div class="cmd-left"><div class="cmd-code">!facebook</div><div class="cmd-desc">Sendet den Link zur Facebook-Seite.</div><div class="cmd-desc-en">Sends the link to the Facebook page.</div></div>
+            <button class="copy" data-copy="!facebook">Kopieren</button>
+          </li>
+          -->
+
+          <!--
+          <li class="cmd" data-text="!instagram insta">
+            <div class="cmd-left"><div class="cmd-code">!instagram</div><div class="cmd-desc">Sendet den Instagram-Link.</div><div class="cmd-desc-en">Sends the Instagram link.</div></div>
+            <button class="copy" data-copy="!instagram">Kopieren</button>
+          </li>
+          -->
+
+          <li class="cmd" data-text="!streamavatar stream avatars befehle link">
+            <div class="cmd-left"><div class="cmd-code">!streamavatar</div><div class="cmd-desc">Sendet den Link zu allen Stream-Avatars-Befehlen.</div><div class="cmd-desc-en">Sends the link to all Stream Avatars commands.</div></div>
+            <button class="copy" data-copy="!streamavatar">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!tree linktree">
+            <div class="cmd-left"><div class="cmd-code">!tree</div><div class="cmd-desc">Sendet den Link zu meinem Linktree (alle Social Media Links an einem Ort).</div><div class="cmd-desc-en">Sends the link to my Linktree (all social media links in one place).</div></div>
+            <button class="copy" data-copy="!tree">Kopieren</button>
+          </li>
+
+          <!--
+          <li class="cmd" data-text="!twitter x">
+            <div class="cmd-left"><div class="cmd-code">!twitter</div><div class="cmd-desc">Sendet den Link zum Twitter/X-Account.</div><div class="cmd-desc-en">Sends the link to the Twitter/X account.</div></div>
+            <button class="copy" data-copy="!twitter">Kopieren</button>
+          </li>
+          -->
+
+          <!--
+          <li class="cmd" data-text="!youtube yt">
+            <div class="cmd-left"><div class="cmd-code">!youtube</div><div class="cmd-desc">Sendet den Link zum YouTube-Account.</div><div class="cmd-desc-en">Sends the link to the YouTube account.</div></div>
+            <button class="copy" data-copy="!youtube">Kopieren</button>
+          </li>
+          -->
+        </ul>
+      </div>
+      </section>
+
+      <section class="sec" data-cat="core" id="quotes">
+        <header class="sec-head"><span class="sec-ico">💬</span><h2>Quotes</h2></header>
+      <div class="group">
+        <ul class="cmds">
+          <li class="cmd" data-text="!quote zufall random">
+            <div class="cmd-left"><div class="cmd-code">!quote</div><div class="cmd-desc">Zeigt eine zufälligen Quote.</div><div class="cmd-desc-en">Shows a random quote.</div></div>
+            <button class="copy" data-copy="!quote">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!quote # nummer">
+            <div class="cmd-left"><div class="cmd-code">!quote &lt;#&gt;</div><div class="cmd-desc">Zeigt Quote Nummer &lt;#&gt; (z.B. !quote 2).</div><div class="cmd-desc-en">Shows quote number &lt;#&gt; (e.g. !quote 2).</div></div>
+            <button class="copy" data-copy="!quote ">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!quote add hinzufügen mod">
+            <div class="cmd-left"><div class="cmd-code">!quote add &lt;quote&gt;</div><div class="cmd-desc">Fügt einen Quote hinzu. (Standard: Mod-Rechte nötig – kann aber angepasst werden.)</div><div class="cmd-desc-en">Adds a quote. (Default: requires mod rights, can be adjusted.)</div></div>
+            <button class="copy" data-copy="!quote add ">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!quote del löschen mod">
+            <div class="cmd-left"><div class="cmd-code">!quote del &lt;#&gt;</div><div class="cmd-desc">Löscht Quote Nummer &lt;#&gt;.</div><div class="cmd-desc-en">Deletes quote number &lt;#&gt;.</div></div>
+            <button class="copy" data-copy="!quote del ">Kopieren</button>
+          </li>
+        </ul>
+      </div>
+      </section>
+
+
+      <!-- ================= SPIELBEFEHLE ================= -->
+      <section class="sec" data-cat="games" id="avatars">
+        <header class="sec-head"><span class="sec-ico">🧍</span><h2>Stream Avatars</h2></header>
+      <div class="group">
+        <h3>✅ Basics</h3>
+        <ul class="cmds">
+          <li class="cmd" data-text="!actions actions">
+            <div class="cmd-left"><div class="cmd-code">!actions</div><div class="cmd-desc">Zeigt verfügbare Actions (falls aktiv).</div><div class="cmd-desc-en">Shows available actions (if enabled).</div></div>
+            <button class="copy" data-copy="!actions">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!avatars liste avatar">
+            <div class="cmd-left"><div class="cmd-code">!avatars</div><div class="cmd-desc">Liste der verfügbaren Avatare anzeigen.</div><div class="cmd-desc-en">Lists the available avatars.</div></div>
+            <button class="copy" data-copy="!avatars">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!avatars block_man avatar auswählen">
+            <div class="cmd-left"><div class="cmd-code">!avatars "block_man"</div><div class="cmd-desc">Avatar auswählen (Beispiel).</div><div class="cmd-desc-en">Selects an avatar (example).</div></div>
+            <button class="copy" data-copy="!avatars ">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!gear gear gruppen">
+            <div class="cmd-left"><div class="cmd-code">!gear</div><div class="cmd-desc">Gear-Gruppen anzeigen.</div><div class="cmd-desc-en">Shows the gear groups.</div></div>
+            <button class="copy" data-copy="!gear">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!gear kmystics navi item equip">
+            <div class="cmd-left"><div class="cmd-code">!gear "kmystics navi"</div><div class="cmd-desc">Item equippen (Beispiel).</div><div class="cmd-desc-en">Equips an item (example).</div></div>
+            <button class="copy" data-copy="!gear ">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!gear kmystics gruppe">
+            <div class="cmd-left"><div class="cmd-code">!gear "kmystics"</div><div class="cmd-desc">Items einer Gruppe anzeigen (Beispiel).</div><div class="cmd-desc-en">Shows the items of a group (example).</div></div>
+            <button class="copy" data-copy="!gear ">Kopieren</button>
+          </li>
+        </ul>
+      </div>
+      <div class="group">
+        <h3 data-en="🕺 Movement / Pose">🕺 Bewegung / Pose</h3>
+        <ul class="cmds">
+          <li class="cmd" data-text="!links prozent bewegen">
+            <div class="cmd-left"><div class="cmd-code">!links &lt;prozent&gt;</div><div class="cmd-desc">Bewegt deinen Avatar nach links (z.B. <b>!links 20</b>).</div><div class="cmd-desc-en">Moves your avatar to the left (e.g. <b>!links 20</b>).</div></div>
+            <button class="copy" data-copy="!links ">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!rechts prozent bewegen">
+            <div class="cmd-left"><div class="cmd-code">!rechts &lt;prozent&gt;</div><div class="cmd-desc">Bewegt deinen Avatar nach rechts (z.B. <b>!rechts 40</b>).</div><div class="cmd-desc-en">Moves your avatar to the right (e.g. <b>!rechts 40</b>).</div></div>
+            <button class="copy" data-copy="!rechts ">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!sitzen sitzen pose">
+            <div class="cmd-left"><div class="cmd-code">!sitzen</div><div class="cmd-desc">Avatar setzt sich hin.</div><div class="cmd-desc-en">Your avatar sits down.</div></div>
+            <button class="copy" data-copy="!sitzen">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!stehen stehen pose">
+            <div class="cmd-left"><div class="cmd-code">!stehen</div><div class="cmd-desc">Avatar steht wieder auf.</div><div class="cmd-desc-en">Your avatar stands back up.</div></div>
+            <button class="copy" data-copy="!stehen">Kopieren</button>
+          </li>
+        </ul>
+      </div>
+      <div class="group">
+        <h3>🎨 Cosmetics / Loadout</h3>
+        <ul class="cmds">
+          <li class="cmd" data-text="!buy kategorie kaufen shop">
+            <div class="cmd-left"><div class="cmd-code">!buy &lt;kategorie&gt;</div><div class="cmd-desc">Kauft zufällig aus einer Kategorie (falls Shop aktiv).</div><div class="cmd-desc-en">Buys a random item from a category (if the shop is enabled).</div></div>
+            <button class="copy" data-copy="!buy ">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!buy kategorie item kaufen shop">
+            <div class="cmd-left"><div class="cmd-code">!buy &lt;kategorie&gt; &lt;item&gt;</div><div class="cmd-desc">Kauft ein bestimmtes Item (Beispiel im Portal: Avatare etc.).</div><div class="cmd-desc-en">Buys a specific item (example in the portal: avatars etc.).</div></div>
+            <button class="copy" data-copy="!buy ">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!color farbe style">
+            <div class="cmd-left"><div class="cmd-code">!color</div><div class="cmd-desc">Zeigt verfügbare Farben/Optionen (je nach Setup).</div><div class="cmd-desc-en">Shows available colors/options (depending on setup).</div></div>
+            <button class="copy" data-copy="!color">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!color farbe setzen">
+            <div class="cmd-left"><div class="cmd-code">!color &lt;farbe&gt;</div><div class="cmd-desc">Setzt eine Farbe (Beispiel: <b>!color ssb_yellow</b>).</div><div class="cmd-desc-en">Sets a color (example: <b>!color ssb_yellow</b>).</div></div>
+            <button class="copy" data-copy="!color ">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!nametags nametag tag">
+            <div class="cmd-left"><div class="cmd-code">!nametags</div><div class="cmd-desc">Zeigt verfügbare Nametag-Optionen (falls aktiv).</div><div class="cmd-desc-en">Shows available nametag options (if enabled).</div></div>
+            <button class="copy" data-copy="!nametags">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!nametags tag setzen">
+            <div class="cmd-left"><div class="cmd-code">!nametags &lt;tag&gt;</div><div class="cmd-desc">Setzt ein Nametag (z.B. <b>!nametags follower</b>).</div><div class="cmd-desc-en">Sets a nametag (e.g. <b>!nametags follower</b>).</div></div>
+            <button class="copy" data-copy="!nametags ">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!random random equip zufall">
+            <div class="cmd-left"><div class="cmd-code">!random</div><div class="cmd-desc">Randomisiert dein Loadout (nur aus verfügbaren Sachen).</div><div class="cmd-desc-en">Randomizes your loadout (only from items you have).</div></div>
+            <button class="copy" data-copy="!random">Kopieren</button>
+          </li>
+        </ul>
+      </div>
+      <div class="group">
+        <h3>🎮 Minigames / Currency</h3>
+        <ul class="cmds">
+          <li class="cmd" data-text="!attack user">
+            <div class="cmd-left"><div class="cmd-code">!attack &lt;user&gt;</div><div class="cmd-desc">Greift einen User an (nur wenn Combat aktiv ist).</div><div class="cmd-desc-en">Attacks a user (only if combat is enabled).</div></div>
+            <button class="copy" data-copy="!attack ">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!bet wetten betten">
+            <div class="cmd-left"><div class="cmd-code">!bet</div><div class="cmd-desc">Wett-Optionen anzeigen.</div><div class="cmd-desc-en">Shows the betting options.</div></div>
+            <button class="copy" data-copy="!bet">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!bet rot/schwarz">
+            <div class="cmd-left"><div class="cmd-code">!bet &lt;betrag&gt; rot/schwarz</div><div class="cmd-desc">Auf rot oder schwarz wetten. (Roulette muss von Mod gestartet werden)</div><div class="cmd-desc-en">Bet on red or black. (Roulette has to be started by a mod)</div></div>
+            <button class="copy" data-copy="!bet ">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!leaderboard ranking bestenliste">
+            <div class="cmd-left"><div class="cmd-code">!leaderboard</div><div class="cmd-desc">Bestenliste anzeigen.</div><div class="cmd-desc-en">Shows the leaderboard.</div></div>
+            <button class="copy" data-copy="!leaderboard">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!shop shop">
+            <div class="cmd-left"><div class="cmd-code">!shop</div><div class="cmd-desc">Shop öffnen/anzeigen.</div><div class="cmd-desc-en">Opens/shows the shop.</div></div>
+            <button class="copy" data-copy="!shop">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!sling winkel power">
+            <div class="cmd-left"><div class="cmd-code">!sling &lt;winkel&gt; [power]</div><div class="cmd-desc">Schleudert (z.B. <b>!sling -75 100</b>) – nur wenn aktiv.</div><div class="cmd-desc-en">Slings your avatar (e.g. <b>!sling -75 100</b>), only if enabled.</div></div>
+            <button class="copy" data-copy="!sling ">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!slots slotmaschine">
+            <div class="cmd-left"><div class="cmd-code">!slots &lt;betrag&gt;</div><div class="cmd-desc">Slotmaschine spielen.</div><div class="cmd-desc-en">Plays the slot machine.</div></div>
+            <button class="copy" data-copy="!slots ">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!zeni currency geld">
+            <div class="cmd-left"><div class="cmd-code">!zeni</div><div class="cmd-desc">Aktuelle Currency anzeigen.</div><div class="cmd-desc-en">Shows your current currency.</div></div>
+            <button class="copy" data-copy="!zeni">Kopieren</button>
+          </li>
+        </ul>
+      </div>
+      <div class="group">
+        <h3>💥 Fun / Social / Actions</h3>
+        <ul class="cmds">
+          <li class="cmd" data-text="!bomb bomb">
+            <div class="cmd-left"><div class="cmd-code">!bomb</div><div class="cmd-desc">Bomb-Event (je nach Setup).</div><div class="cmd-desc-en">Bomb event (depending on setup).</div></div>
+            <button class="copy" data-copy="!bomb">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!bomb user">
+            <div class="cmd-left"><div class="cmd-code">!bomb &lt;user&gt;</div><div class="cmd-desc">Bomb-Event auf User (je nach Setup).</div><div class="cmd-desc-en">Bomb event on a user (depending on setup).</div></div>
+            <button class="copy" data-copy="!bomb ">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!dance">
+            <div class="cmd-left"><div class="cmd-code">!dance</div><div class="cmd-desc">Tanzen.</div><div class="cmd-desc-en">Dance.</div></div>
+            <button class="copy" data-copy="!dance">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!duell duel user bet amount">
+            <div class="cmd-left"><div class="cmd-code">!duell &lt;user&gt; &lt;betrag&gt;</div><div class="cmd-desc">Duell um Currency.</div><div class="cmd-desc-en">Duel for currency.</div></div>
+            <button class="copy" data-copy="!duell ">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!extension extension">
+            <div class="cmd-left"><div class="cmd-code">!extension</div><div class="cmd-desc">Info/Link zur Extension (falls aktiv).</div><div class="cmd-desc-en">Info/link for the extension (if enabled).</div></div>
+            <button class="copy" data-copy="!extension">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!fart furz">
+            <div class="cmd-left"><div class="cmd-code">!fart</div><div class="cmd-desc">…ja. 😄</div><div class="cmd-desc-en">…yes. 😄</div></div>
+            <button class="copy" data-copy="!fart">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!hideavatar hide avatar">
+            <div class="cmd-left"><div class="cmd-code">!hideavatar</div><div class="cmd-desc">Eigenen Avatar verstecken.</div><div class="cmd-desc-en">Hides your own avatar.</div></div>
+            <button class="copy" data-copy="!hideavatar">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!hug user avatars">
+            <div class="cmd-left"><div class="cmd-code">!hug &lt;user&gt;</div><div class="cmd-desc">Avatar-Hug.</div><div class="cmd-desc-en">Avatar hug.</div></div>
+            <button class="copy" data-copy="!hug ">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!jump">
+            <div class="cmd-left"><div class="cmd-code">!jump</div><div class="cmd-desc">Springen.</div><div class="cmd-desc-en">Jump.</div></div>
+            <button class="copy" data-copy="!jump">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!show show">
+            <div class="cmd-left"><div class="cmd-code">!show</div><div class="cmd-desc">Show/Anzeige (je nach Setup).</div><div class="cmd-desc-en">Show/display (depending on setup).</div></div>
+            <button class="copy" data-copy="!show">Kopieren</button>
+          </li>
+        </ul>
+      </div>
+      </section>
+
+      <section class="sec" data-cat="games" id="modlists">
+        <header class="sec-head"><span class="sec-ico">🧩</span><h2 data-en="My Mod Lists">Meine Mod-Listen</h2></header>
+      <div class="group">
+        <ul class="cmds">
+          <li class="cmd" data-text="!fallout4 mods modliste mod tabelle fallout 4">
+            <div class="cmd-left"><div class="cmd-code">!fallout4</div><div class="cmd-desc">Postet den Link zur Fallout 4 Mod-Tabelle (alle Mods + Links).</div><div class="cmd-desc-en">Posts the link to the Fallout 4 mod list (all mods + links).</div></div>
+            <button class="copy" data-copy="!fallout4">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!falloutnv mods modliste mod tabelle fallout new vegas fnv">
+            <div class="cmd-left"><div class="cmd-code">!falloutnv</div><div class="cmd-desc">Postet den Link zur Fallout: New Vegas Mod-Tabelle (alle Mods + Links).</div><div class="cmd-desc-en">Posts the link to the Fallout: New Vegas mod list (all mods + links).</div></div>
+            <button class="copy" data-copy="!falloutnv">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!morroblivion mods modliste mod tabelle morroblivion">
+            <div class="cmd-left"><div class="cmd-code">!morroblivion</div><div class="cmd-desc">Postet den Link zur Morroblivion Mod-Tabelle (alle Mods + Links).</div><div class="cmd-desc-en">Posts the link to the Morroblivion mod list (all mods + links).</div></div>
+            <button class="copy" data-copy="!morroblivion">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!planetcrafter mods modliste mod tabelle planet crafter">
+            <div class="cmd-left"><div class="cmd-code">!planetcrafter</div><div class="cmd-desc">Postet den Link zur Planet Crafter Mod-Tabelle (alle Mods + Links).</div><div class="cmd-desc-en">Posts the link to the Planet Crafter mod list (all mods + links).</div></div>
+            <button class="copy" data-copy="!planetcrafter">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!skyrimse mods modliste mod tabelle skyrim se special edition">
+            <div class="cmd-left"><div class="cmd-code">!skyrimse</div><div class="cmd-desc">Postet den Link zur Skyrim SE Mod-Tabelle (alle Mods + Links).</div><div class="cmd-desc-en">Posts the link to the Skyrim SE mod list (all mods + links).</div></div>
+            <button class="copy" data-copy="!skyrimse">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!supermarket mods modliste mod tabelle supermarket together">
+            <div class="cmd-left"><div class="cmd-code">!supermarket</div><div class="cmd-desc">Postet den Link zur Supermarket Together Mod-Tabelle (alle Mods + Links).</div><div class="cmd-desc-en">Posts the link to the Supermarket Together mod list (all mods + links).</div></div>
+            <button class="copy" data-copy="!supermarket">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="!tcgcss mods modliste mod tabelle tcg card shop simulator">
+            <div class="cmd-left"><div class="cmd-code">!tcgcss</div><div class="cmd-desc">Postet den Link zur TCG Card Shop Simulator Mod-Tabelle (alle Mods + Links).</div><div class="cmd-desc-en">Posts the link to the TCG Card Shop Simulator mod list (all mods + links).</div></div>
+            <button class="copy" data-copy="!tcgcss">Kopieren</button>
+          </li>
+        </ul>
+      </div>
+      </section>
+
+      <section class="sec" data-cat="games" id="weedshop">
+        <header class="sec-head"><span class="sec-ico">🌿</span><h2>Weed Shop 3</h2></header>
+      <div class="group">
+        <h3>📌 Basics</h3>
+        <ul class="cmds">
+          <li class="cmd" data-text="#dowhatnow help commands">
+            <div class="cmd-left"><div class="cmd-code">#dowhatnow</div><div class="cmd-desc">Zeigt alle verfügbaren Weed Shop Commands.</div><div class="cmd-desc-en">Shows all available Weed Shop commands.</div></div>
+            <button class="copy" data-copy="#dowhatnow">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="#gethigh high">
+            <div class="cmd-left"><div class="cmd-code">#gethigh</div><div class="cmd-desc">Charakter wird high 😄</div><div class="cmd-desc-en">Your character gets high 😄</div></div>
+            <button class="copy" data-copy="#gethigh">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="#mynameis rename name">
+            <div class="cmd-left"><div class="cmd-code">#mynameis</div><div class="cmd-desc">Ändert deinen Namen (wenn assigned).</div><div class="cmd-desc-en">Changes your name (if assigned).</div></div>
+            <button class="copy" data-copy="#mynameis">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="#say text speak">
+            <div class="cmd-left"><div class="cmd-code">#say &lt;text&gt;</div><div class="cmd-desc">Text über dem Charakter anzeigen.</div><div class="cmd-desc-en">Shows text above your character.</div></div>
+            <button class="copy" data-copy="#say ">Kopieren</button>
+          </li>
+        </ul>
+      </div>
+      <div class="group">
+        <h3>👤 Customer / Character</h3>
+        <ul class="cmds">
+          <li class="cmd" data-text="#assign assign username customer name">
+            <div class="cmd-left"><div class="cmd-code">#assign @Username Customer Name</div><div class="cmd-desc">User einem Customer zuweisen.</div><div class="cmd-desc-en">Assigns a user to a customer.</div></div>
+            <button class="copy" data-copy="#assign ">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="#assignrandom assign random username">
+            <div class="cmd-left"><div class="cmd-code">#assignrandom @Username</div><div class="cmd-desc">Random Customer zuweisen.</div><div class="cmd-desc-en">Assigns a random customer.</div></div>
+            <button class="copy" data-copy="#assignrandom ">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="#remove remove customer name">
+            <div class="cmd-left"><div class="cmd-code">#remove Customer Name</div><div class="cmd-desc">Customer entfernen.</div><div class="cmd-desc-en">Removes a customer.</div></div>
+            <button class="copy" data-copy="#remove ">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="#rename rename customer new name">
+            <div class="cmd-left"><div class="cmd-code">#rename Customers Name&gt;New Customer Name</div><div class="cmd-desc">Customer umbenennen.</div><div class="cmd-desc-en">Renames a customer.</div></div>
+            <button class="copy" data-copy="#rename ">Kopieren</button>
+          </li>
+        </ul>
+      </div>
+      <div class="group">
+        <h3>🎬 Actions / Fun</h3>
+        <ul class="cmds">
+          <li class="cmd" data-text="#bounce bounce beachball">
+            <div class="cmd-left"><div class="cmd-code">#bounce</div><div class="cmd-desc">Beachballs bouncen.</div><div class="cmd-desc-en">Bounces beach balls.</div></div>
+            <button class="copy" data-copy="#bounce">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="#holdmydildo number amount">
+            <div class="cmd-left"><div class="cmd-code">#holdmydildo &lt;amount&gt;</div><div class="cmd-desc">Droppt Dildos (z.B. #holdmydildo 50).</div><div class="cmd-desc-en">Drops dildos (e.g. #holdmydildo 50).</div></div>
+            <button class="copy" data-copy="#holdmydildo ">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="#jump jump">
+            <div class="cmd-left"><div class="cmd-code">#jump</div><div class="cmd-desc">Springen.</div><div class="cmd-desc-en">Jump.</div></div>
+            <button class="copy" data-copy="#jump">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="#makeit weather">
+            <div class="cmd-left"><div class="cmd-code">#makeit</div><div class="cmd-desc">Wetter ändern (mit Voraussetzung/Spot).</div><div class="cmd-desc-en">Changes the weather (requires the right spot).</div></div>
+            <button class="copy" data-copy="#makeit">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="#popoff fireworks">
+            <div class="cmd-left"><div class="cmd-code">#popoff</div><div class="cmd-desc">Feuerwerk.</div><div class="cmd-desc-en">Fireworks.</div></div>
+            <button class="copy" data-copy="#popoff">Kopieren</button>
+          </li>
+
+          <li class="cmd" data-text="#pullup pull up thief">
+            <div class="cmd-left"><div class="cmd-code">#pullup</div><div class="cmd-desc">Viewer spawnt als Thief (Cooldown beachten).</div><div class="cmd-desc-en">You spawn as a thief (mind the cooldown).</div></div>
+            <button class="copy" data-copy="#pullup">Kopieren</button>
+          </li>
+        </ul>
+      </div>
+      </section>
+
+      <!-- HIER NEUE SECTIONS EINFÜGEN -->
+
+      <!-- Mod-Sections (verschlüsselt, bearbeiten mit mod-tool.html) -->
+      <script type="text/plain" id="modData">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</script>
+
+      <div class="empty" id="empty" data-i18n="empty">Keine Treffer. Versuch einen anderen Begriff 👀</div>
     </main>
   </div>
+
+  <footer class="footer">
+    <div>© 2026 leech (ReaperLeech). All rights reserved. • Gears of Weed • leech's TwitchChat-Commands</div>
+    <div><a href="#top" data-i18n="top">↑ zurück nach oben</a></div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
     // =====================
     // 1) PARAMS: mod + tab
     // =====================
     const params = new URLSearchParams(window.location.search);
-    const showMods = params.get('mod') === '1';
+
+    // Mod-Modus: Die Mod-Sections liegen verschlüsselt in #modData und werden
+    // erst mit dem richtigen Wort entschlüsselt. Das Wort wird im Browser gemerkt.
+    // Bearbeiten der Mod-Commands: mit mod-tool.html (nicht hochladen nötig).
+    const MOD_KEY = 'tcc_m';
+    function loadWord(){ try{ return localStorage.getItem(MOD_KEY) || ''; }catch{ return ''; } }
+    function saveWord(w){ try{ w ? localStorage.setItem(MOD_KEY, w) : localStorage.removeItem(MOD_KEY); }catch{} }
+
+    let showMods = false;
+    let modWord = '';
+
+    // =====================
+    // SPRACHE (DE / EN)
+    // Gemerkt im Browser. Ohne Wahl: deutscher Browser = DE, sonst EN. ?lang=de|en geht auch.
+    // =====================
+    const LANG_KEY = 'tcc_lang';
+    const I18N = {
+      de: {
+        tabAll: '📜 Alle', tabCore: '💬 Chat / Info / Fun', tabGames: '🎮 Spielbefehle',
+        search: 'Commands suchen… z.B. followage, hug, death, #pullup', clear: 'Suche leeren',
+        legend: '= nur für diese Rollen', empty: 'Keine Treffer. Versuch einen anderen Begriff 👀',
+        top: '↑ zurück nach oben', home: 'Zur Startansicht',
+        copy: 'Kopieren', clickCopy: 'Klicken zum Kopieren', copied: 'kopiert',
+        modOn: '🛡️ Mod-Modus aktiviert', modOff: 'Mod-Modus deaktiviert',
+        catCore: 'Chat / Info / Fun', catGames: 'Spielbefehle', catMod: 'Mod / Admin',
+        langBtn: 'EN', langTitle: 'Switch to English'
+      },
+      en: {
+        tabAll: '📜 All', tabCore: '💬 Chat / Info / Fun', tabGames: '🎮 Game Commands',
+        search: 'Search commands… e.g. followage, hug, death, #pullup', clear: 'Clear search',
+        legend: '= only for these roles', empty: 'No results. Try a different term 👀',
+        top: '↑ back to top', home: 'Back to start',
+        copy: 'Copy', clickCopy: 'Click to copy', copied: 'copied',
+        modOn: '🛡️ Mod mode enabled', modOff: 'Mod mode disabled',
+        catCore: 'Chat / Info / Fun', catGames: 'Game Commands', catMod: 'Mod / Admin',
+        langBtn: 'DE', langTitle: 'Auf Deutsch wechseln'
+      }
+    };
+    const FLAG = {
+      en: '<svg viewBox="0 0 60 30" aria-hidden="true"><clipPath id="ukc"><path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z"/></clipPath><path d="M0,0 v30 h60 v-30 z" fill="#012169"/><path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" stroke-width="6"/><path d="M0,0 L60,30 M60,0 L0,30" clip-path="url(#ukc)" stroke="#C8102E" stroke-width="4"/><path d="M30,0 v30 M0,15 h60" stroke="#fff" stroke-width="10"/><path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6"/></svg>',
+      de: '<svg viewBox="0 0 5 3" aria-hidden="true"><rect width="5" height="3" fill="#FFCE00"/><rect width="5" height="2" fill="#DD0000"/><rect width="5" height="1" fill="#000"/></svg>'
+    };
+    function detectLang(){
+      const p = (params.get('lang') || '').toLowerCase();
+      if (p === 'de' || p === 'en') return p;
+      try{ const s = localStorage.getItem(LANG_KEY); if (s === 'de' || s === 'en') return s; }catch{}
+      const nav = (navigator.languages && navigator.languages[0]) || navigator.language || 'de';
+      return nav.toLowerCase().startsWith('de') ? 'de' : 'en';
+    }
+    let lang = detectLang();
+    const t = key => (I18N[lang] && I18N[lang][key]) || I18N.de[key] || key;
 
     // Tab per URL: ?tab=core|games|all|mod
     // Legacy: ?tab=avatars oder ?tab=weed => games
     const rawTab = (params.get('tab') || '').toLowerCase();
-    const tabMap = {
-      core: 'core',
-      games: 'games',
-      all: 'all',
-      mod: 'mod',
-      avatars: 'games',
-      weed: 'games'
-    };
+    const tabMap = { core:'core', games:'games', all:'all', mod:'mod', avatars:'games', weed:'games' };
 
     // =====================
     // 2) ELEMENTS
     // =====================
-const search   = document.getElementById('search');
-const clearBtn = document.getElementById('clearSearch');
+    const search     = document.getElementById('search');
+    const clearBtn   = document.getElementById('clearSearch');
+    const empty      = document.getElementById('empty');
+    const filterBtns = Array.from(document.querySelectorAll('.fbtn'));
+    let   sections   = Array.from(document.querySelectorAll('section[data-cat]'));
+    const refreshSections = () => { sections = Array.from(document.querySelectorAll('section[data-cat]')); };
+    const modTabBtn  = document.getElementById('modTabBtn');
+    const navEl      = document.getElementById('sectionNav');
+    const toastEl    = document.getElementById('toast');
 
-const items  = Array.from(document.querySelectorAll('.cmd'));
-const empty  = document.getElementById('empty');
-const filterBtns = Array.from(document.querySelectorAll('.fbtn'));
-const sections = Array.from(document.querySelectorAll('section[data-cat]'));
-const modTabBtn = document.getElementById('modTabBtn');
-
-// X-Button nur anzeigen wenn Text drin ist + Klick leert Suche
-function updateClearButton(){
-  if(!clearBtn) return;
-  clearBtn.style.display = (search && search.value.trim()) ? "inline-flex" : "none";
-}
-
-if(clearBtn && search){
-  clearBtn.addEventListener("click", () => {
-  search.value = "";
-  search.focus();
-  updateClearButton();
-
-  // ✅ Suchmodus sauber beenden + zurück zum vorherigen Tab
-  searchMode = false;
-  activeCat = lastNonSearchCat;
-  if (activeCat === 'mod' && !showMods) activeCat = 'core';
-  syncActiveButton();
-
-  applyFilter(); // zeigt wieder alles an
-});
-
-  search.addEventListener("input", updateClearButton);
-  updateClearButton();
-}
-
+    const wantModTab = (tabMap[rawTab] === 'mod');
     let activeCat = tabMap[rawTab] || 'core';
-    if (activeCat === 'mod' && !showMods) activeCat = 'core';
-    let lastNonSearchCat = activeCat;  // merkt sich den letzten Tab, bevor gesucht wurde
-    let searchMode = false;           // sind wir gerade im Suchmodus?
+    if (activeCat === 'mod') activeCat = 'core';  // Mod-Tab erst nach dem Entschlüsseln
+    let lastNonSearchCat = activeCat;  // letzter Tab vor der Suche
+    let searchMode = false;
 
-    if (showMods && modTabBtn) modTabBtn.style.display = '';
+    function updateModTab(){ if (modTabBtn) modTabBtn.style.display = showMods ? '' : 'none'; }
+    updateModTab();
+
+    const ICON_COPY  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>';
+    const ICON_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+    const ICON_CHEV  = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
 
     // =====================
-    // 3) A–Z SORTIERUNG (pro UL)
+    // 3) COMMANDS AUFBEREITEN
+    //    (HTML bleibt simpel: cmd-code + cmd-desc + copy-Button.
+    //     Rollen-Badges werden aus "(nur VIP's & Subscribers)" in der Beschreibung erzeugt.)
     // =====================
-    function normalizeForSort(s){
-      return (s || '')
-        .toLowerCase()
-        .replace(/^!/, '')
-        .replace(/^#/, '')
-        .replace(/\s+/g, ' ')
-        .trim();
+    function escapeHtml(s){
+      return s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
     }
 
-    function sortAllListsAZ(){
-      const lists = Array.from(document.querySelectorAll('section ul'));
-      lists.forEach(ul => {
+    function enhanceCommand(li){
+      const left = li.querySelector('.cmd-left');
+      const code = li.querySelector('.cmd-code');
+      const desc = li.querySelector('.cmd-desc');
+      const btn  = li.querySelector('.copy');
+      if (!left || !code) return;
+
+      // Suchtext merken, bevor etwas verändert wird
+      const descEn = li.querySelector('.cmd-desc-en');
+      if (descEn && descEn.textContent.trim()) li.classList.add('has-en');
+      li.dataset.hay = [
+        li.getAttribute('data-text') || '',
+        code.textContent,
+        desc ? desc.textContent : '',
+        descEn ? descEn.textContent : ''
+      ].join(' ').toLowerCase();
+
+      // Prefix-Farbe
+      const raw = code.textContent.trim();
+      code.classList.add(raw.startsWith('!') ? 'p-bang' : raw.startsWith('#') ? 'p-hash' : 'p-word');
+
+      // Platzhalter (<user>, [power], "beispiel") dezenter darstellen
+      code.innerHTML = escapeHtml(raw)
+        .replace(/(&lt;[^&]*?&gt;|\[[^\]]*\]|&quot;[^&]*?&quot;)/g, '<span class="arg">$1</span>');
+
+      // Rollen aus "(nur ...)" ziehen
+      const top = document.createElement('div');
+      top.className = 'cmd-top';
+      left.insertBefore(top, code);
+      top.appendChild(code);
+
+      if (desc){
+        const m = desc.innerHTML.match(/\s*\((nur [^)]*)\)\s*$/i);
+        if (m){
+          const r = m[1].toLowerCase();
+          if (r.includes('vip')) top.insertAdjacentHTML('beforeend', '<span class="role vip">VIP</span>');
+          if (r.includes('sub')) top.insertAdjacentHTML('beforeend', '<span class="role sub">SUB</span>');
+          if (/\bmod/.test(r))   top.insertAdjacentHTML('beforeend', '<span class="role mod">MOD</span>');
+          desc.innerHTML = desc.innerHTML.slice(0, m.index).trim();
+        }
+      }
+
+      if (btn){
+        btn.innerHTML = ICON_COPY;
+      }
+    }
+
+    // =====================
+    // 4) A–Z SORTIERUNG (pro Liste)
+    // =====================
+    function normalizeForSort(s){
+      return (s || '').toLowerCase().replace(/^[!#]/, '').replace(/\s+/g, ' ').trim();
+    }
+    function sortAllListsAZ(root){
+      root.querySelectorAll('section ul').forEach(ul => {
         const lis = Array.from(ul.querySelectorAll(':scope > li.cmd'));
         if (lis.length < 2) return;
-
-        lis.sort((a, b) => {
-          const aKey = normalizeForSort(a.querySelector('.cmd-code')?.textContent || a.getAttribute('data-text') || '');
-          const bKey = normalizeForSort(b.querySelector('.cmd-code')?.textContent || b.getAttribute('data-text') || '');
-          return aKey.localeCompare(bKey, 'de', { sensitivity: 'base' });
-        });
-
+        lis.sort((a, b) => normalizeForSort(a.querySelector('.cmd-code')?.textContent)
+          .localeCompare(normalizeForSort(b.querySelector('.cmd-code')?.textContent), 'de', { sensitivity: 'base' }));
         lis.forEach(li => ul.appendChild(li));
       });
     }
 
     // =====================
-    // 4) FILTER + SECRET
+    // 5) SECTION-HEADER (Zähler + Einklappen)
     // =====================
-    function isSecretSection(sec){
-      return sec.getAttribute('data-secret') === '1';
+    function setupSections(root){
+      root.querySelectorAll('section[data-cat]').forEach(sec => {
+        const head = sec.querySelector('.sec-head');
+        if (!head) return;
+        const count = document.createElement('span');
+        count.className = 'sec-count';
+        const chev = document.createElement('span');
+        chev.className = 'sec-chev';
+        chev.innerHTML = ICON_CHEV;
+        head.append(count, chev);
+        head.setAttribute('role', 'button');
+        head.setAttribute('tabindex', '0');
+        const toggle = () => sec.classList.toggle('collapsed');
+        head.addEventListener('click', toggle);
+        head.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); } });
+      });
     }
 
+    // =====================
+    // 6) FILTER + SECRET
+    // =====================
+    const isSecret = sec => sec.getAttribute('data-secret') === '1';
+    const sectionAllowed = sec => !(isSecret(sec) && !showMods);
+
     function syncActiveButton(){
-      filterBtns.forEach(b => b.classList.remove('active'));
-      const btn = filterBtns.find(b => (b.getAttribute('data-filter') || '') === activeCat);
-      (btn || filterBtns.find(b => b.getAttribute('data-filter') === 'core'))?.classList.add('active');
+      filterBtns.forEach(b => b.classList.toggle('active', b.getAttribute('data-filter') === activeCat));
     }
 
     function applyFilter(){
-  const q = (search?.value || '').trim().toLowerCase();
-  let visible = 0;
+      const q = (search?.value || '').trim().toLowerCase();
+      const perCat = { all: 0, core: 0, games: 0, mod: 0 };
+      let visible = 0;
 
-  // 1) Match-Flag pro Command setzen
-  items.forEach(li => {
-    const hay =
-      (li.getAttribute('data-text') || '').toLowerCase()
-      + ' ' + (li.querySelector('.cmd-code')?.textContent || '').toLowerCase()
-      + ' ' + (li.querySelector('.cmd-desc')?.textContent || '').toLowerCase();
+      sections.forEach(sec => {
+        const cat = sec.getAttribute('data-cat');
+        if (!sectionAllowed(sec)){ sec.style.display = 'none'; return; }
 
-    li.dataset.matchText = (q === '' || hay.includes(q)) ? '1' : '0';
-  });
+        const catOk = (activeCat === 'all' || cat === activeCat);
+        let secVisible = 0;
 
-  // Helper: leere ULs + deren H3 verstecken
-  function cleanupListsAndHeadings(sec){
-    const uls = Array.from(sec.querySelectorAll('ul'));
-    uls.forEach(ul => {
-      const hasVisibleCmd = Array.from(ul.querySelectorAll('li.cmd'))
-        .some(li => li.style.display !== 'none');
+        sec.querySelectorAll('.group').forEach(group => {
+          let groupVisible = 0;
+          group.querySelectorAll('li.cmd').forEach(li => {
+            const match = q === '' || li.dataset.hay.includes(q);
+            if (match){ perCat[cat] = (perCat[cat] || 0) + 1; perCat.all++; }
+            const show = catOk && match;
+            li.style.display = show ? '' : 'none';
+            if (show) groupVisible++;
+          });
+          group.style.display = groupVisible ? '' : 'none';
+          secVisible += groupVisible;
+        });
 
-      // UL aus/ein
-      ul.style.display = hasVisibleCmd ? '' : 'none';
+        sec.style.display = secVisible ? '' : 'none';
+        const c = sec.querySelector('.sec-count');
+        if (c) c.textContent = secVisible;
+        sec.dataset.visible = secVisible;
+        // Bei aktiver Suche Treffer immer aufklappen
+        if (q && secVisible) sec.classList.remove('collapsed');
+        visible += secVisible;
+      });
 
-      // Falls direkt davor ein H3 steht -> ebenfalls aus/ein
-      const prev = ul.previousElementSibling;
-      if (prev && prev.tagName === 'H3'){
-        prev.style.display = hasVisibleCmd ? '' : 'none';
+      filterBtns.forEach(b => {
+        const n = b.querySelector('.n');
+        if (n) n.textContent = perCat[b.getAttribute('data-filter')] ?? 0;
+      });
+
+      if (empty) empty.style.display = visible === 0 ? 'block' : 'none';
+      buildNav();
+      return visible;
+    }
+
+    // =====================
+    // 7) SIDEBAR-NAVIGATION
+    // =====================
+    const CAT_LABEL = { core: 'catCore', games: 'catGames', mod: 'catMod' };
+    function buildNav(){
+      if (!navEl) return;
+      navEl.innerHTML = '';
+      let lastCat = null;
+      sections.forEach(sec => {
+        if (sec.style.display === 'none') return;
+        const cat = sec.getAttribute('data-cat');
+        if (cat !== lastCat){
+          const l = document.createElement('div');
+          l.className = 'label';
+          l.textContent = CAT_LABEL[cat] ? t(CAT_LABEL[cat]) : cat;
+          navEl.appendChild(l);
+          lastCat = cat;
+        }
+        const a = document.createElement('a');
+        a.href = '#' + sec.id;
+        a.dataset.target = sec.id;
+        a.innerHTML = '<span>' + (sec.querySelector('.sec-ico')?.textContent || '') + '</span>'
+          + '<span class="t">' + escapeHtml(sec.querySelector('h2')?.textContent || '') + '</span>'
+          + '<span class="n">' + (sec.dataset.visible || 0) + '</span>';
+        a.addEventListener('click', () => sec.classList.remove('collapsed'));
+        navEl.appendChild(a);
+      });
+      updateCurrentNav();
+    }
+
+    function updateCurrentNav(){
+      if (!navEl) return;
+      const offset = (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--toolbar-h')) || 64) + 40;
+      let current = null;
+      for (const sec of sections){
+        if (sec.style.display === 'none') continue;
+        if (sec.getBoundingClientRect().top - offset <= 0) current = sec.id;
+        else { if (!current) current = sec.id; break; }
       }
-    });
-  }
-
-  sections.forEach(sec => {
-    const cat = sec.getAttribute('data-cat');
-
-    // Secret-Sections nur bei ?mod=1
-    if (isSecretSection(sec) && !showMods){
-      sec.style.display = 'none';
-      Array.from(sec.querySelectorAll('.cmd')).forEach(li => li.style.display = 'none');
-      return;
+      navEl.querySelectorAll('a').forEach(a => a.classList.toggle('current', a.dataset.target === current));
     }
+    window.addEventListener('scroll', () => requestAnimationFrame(updateCurrentNav), { passive: true });
 
-    const catOk = (activeCat === 'all' || cat === activeCat);
-
-    // 2) Commands innerhalb der Section anzeigen/ausblenden
-    const secItems = Array.from(sec.querySelectorAll('.cmd'));
-    let secHasVisible = false;
-
-    secItems.forEach(li => {
-      const show = catOk && (li.dataset.matchText === '1');
-      li.style.display = show ? '' : 'none';
-      if (show){ secHasVisible = true; visible++; }
-    });
-
-    // 3) Ganze Section nur anzeigen wenn mind. 1 Command sichtbar
-    sec.style.display = secHasVisible ? '' : 'none';
-
-    // 4) Wenn Section sichtbar: leere Subpanels (Split-Kacheln) verstecken
-    if (sec.style.display !== 'none'){
-      const subpanels = Array.from(sec.querySelectorAll('.subpanel'));
-      subpanels.forEach(sp => {
-        const hasVisibleCmd = Array.from(sp.querySelectorAll('.cmd'))
-          .some(li => li.style.display !== 'none');
-        sp.style.display = hasVisibleCmd ? '' : 'none';
-      });
-
-      // Split-Container verstecken, wenn keine Subpanels mehr sichtbar sind
-      Array.from(sec.querySelectorAll('.split')).forEach(split => {
-        const visibleSub = Array.from(split.querySelectorAll(':scope > .subpanel'))
-          .some(sp => sp.style.display !== 'none');
-        split.style.display = visibleSub ? '' : 'none';
-      });
-
-      // 5) Wichtig: Leere H3/UL-Gruppen innerhalb der Section verstecken
-      cleanupListsAndHeadings(sec);
-    }
-  });
-
-  if (empty) empty.style.display = (visible === 0) ? 'block' : 'none';
-}
-
+    // =====================
+    // 8) TABS + SUCHE
+    // =====================
     filterBtns.forEach(btn => {
       btn.addEventListener('click', () => {
         const target = btn.getAttribute('data-filter') || 'core';
         if (target === 'mod' && !showMods) return;
-
-        filterBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
         activeCat = target;
-        // merken, wo der User ist (aber nur wenn nicht gerade Suchmodus aktiv)
         if (!searchMode) lastNonSearchCat = activeCat;
+        syncActiveButton();
         applyFilter();
       });
     });
 
-    search?.addEventListener('input', () => {
-  const hasQuery = search.value.trim() !== '';
+    function updateClearButton(){
+      if (clearBtn) clearBtn.style.display = search.value.trim() ? 'inline-flex' : 'none';
+    }
 
-  // Start Search-Mode: merken wo der User war + auf "all" wechseln
-  if (hasQuery && !searchMode){
-    searchMode = true;
-    lastNonSearchCat = activeCat;
-
-    if (activeCat !== 'all'){
-      activeCat = 'all';
+    function endSearchMode(){
+      searchMode = false;
+      activeCat = lastNonSearchCat;
+      if (activeCat === 'mod' && !showMods) activeCat = 'core';
       syncActiveButton();
     }
-  }
 
-  // End Search-Mode: zurück zum letzten Tab
-  if (!hasQuery && searchMode){
-    searchMode = false;
+    function resetSearchAfterMod(){
+      search.value = '';
+      updateClearButton();
+      if (searchMode) endSearchMode();
+      search.blur();
+    }
 
-    activeCat = lastNonSearchCat;
-    if (activeCat === 'mod' && !showMods) activeCat = 'core';
+    let unlockTimer;
+    search?.addEventListener('input', () => {
+      const word = search.value.trim().toLowerCase();
+      clearTimeout(unlockTimer);
 
-    syncActiveButton();
-  }
+      // Gleiches Wort nochmal eingegeben: Mod-Modus aus
+      if (showMods && word === modWord){
+        lockMods();
+        resetSearchAfterMod();
+        applyFilter();
+        showToast(t('modOff'), true);
+        return;
+      }
 
-  applyFilter();
-});
+      const hasQuery = search.value.trim() !== '';
+      // Suche startet: Tab merken + auf "Alle" wechseln
+      if (hasQuery && !searchMode){
+        searchMode = true;
+        lastNonSearchCat = activeCat;
+        activeCat = 'all';
+        syncActiveButton();
+      }
+      // Suche leer: zurück zum letzten Tab
+      if (!hasQuery && searchMode) endSearchMode();
+      updateClearButton();
+      const visible = applyFilter();
 
-    // Copy Buttons
-    document.addEventListener('click', async (e) => {
-      const btn = e.target.closest('.copy');
-      if (!btn) return;
+      // Keine Treffer: kurz warten, dann prüfen ob es das Mod-Wort ist
+      if (!showMods && visible === 0 && word.length >= 4){
+        unlockTimer = setTimeout(async () => {
+          if (search.value.trim().toLowerCase() !== word) return;
+          if (await unlockMods(word)){
+            resetSearchAfterMod();
+            activeCat = lastNonSearchCat = 'mod';
+            syncActiveButton();
+            applyFilter();
+            showToast(t('modOn'), true);
+          }
+        }, 450);
+      }
+    });
 
-      const text = btn.getAttribute('data-copy') || '';
+    clearBtn?.addEventListener('click', () => {
+      search.value = '';
+      search.focus();
+      updateClearButton();
+      if (searchMode) endSearchMode();
+      applyFilter();
+    });
+
+    // "/" fokussiert die Suche, Esc leert sie
+    document.addEventListener('keydown', e => {
+      if (e.key === '/' && document.activeElement !== search){
+        e.preventDefault();
+        search.focus();
+      } else if (e.key === 'Escape' && document.activeElement === search && search.value){
+        clearBtn.click();
+      }
+    });
+
+    // =====================
+    // 9) KOPIEREN (Button oder Klick auf den Command)
+    // =====================
+    let toastTimer;
+    function showToast(text, plain){
+      toastEl.innerHTML = plain ? escapeHtml(text) : '✅ <code>' + escapeHtml(text.trim()) + '</code> ' + t('copied');
+      toastEl.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toastEl.classList.remove('show'), 1400);
+    }
+
+    async function copyText(text){
       try{
         await navigator.clipboard.writeText(text);
       }catch{
@@ -1683,16 +1501,164 @@ if(clearBtn && search){
         document.execCommand('copy');
         ta.remove();
       }
+    }
 
-      const old = btn.textContent;
-      btn.textContent = 'Kopiert ✅';
-      setTimeout(() => btn.textContent = old, 900);
+    document.addEventListener('click', async e => {
+      const target = e.target.closest('.copy, .cmd-code');
+      if (!target) return;
+      const li  = target.closest('li.cmd');
+      const btn = li?.querySelector('.copy');
+      if (!btn) return;
+
+      const text = btn.getAttribute('data-copy') || '';
+      await copyText(text);
+      showToast(text);
+
+      btn.classList.add('done');
+      btn.innerHTML = ICON_CHECK;
+      setTimeout(() => { btn.classList.remove('done'); btn.innerHTML = ICON_COPY; }, 900);
     });
 
-    // init
-    sortAllListsAZ();
+    // =====================
+    // 10) LOGO = ZURÜCK ZUR STARTANSICHT
+    //     (Suche leer, Tab "Chat / Info / Fun", alles aufgeklappt, nach oben.
+    //      Mod-Modus bleibt erhalten, falls aktiv - der wird im Browser gemerkt.)
+    // =====================
+    document.getElementById('homeLink')?.addEventListener('click', e => {
+      e.preventDefault();
+      search.value = '';
+      updateClearButton();
+      searchMode = false;
+      activeCat = lastNonSearchCat = 'core';
+      sections.forEach(sec => sec.classList.remove('collapsed'));
+      syncActiveButton();
+      applyFilter();
+      history.replaceState(null, '', location.pathname);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // =====================
+    // 11) MOD-MODUS: ENTSCHLÜSSELN / SPERREN
+    // =====================
+    function initContent(root){
+      root.querySelectorAll('li.cmd').forEach(enhanceCommand);
+      sortAllListsAZ(root);
+      setupSections(root);
+      applyLang(root);
+    }
+
+    // Sprache auf einen Bereich anwenden (ganze Seite oder neu entschlüsselte Mod-Sections)
+    function applyLang(root){
+      root.querySelectorAll('h2[data-en], h3[data-en]').forEach(h => {
+        if (h.dataset.de === undefined) h.dataset.de = h.textContent;
+        h.textContent = (lang === 'en' && h.dataset.en) ? h.dataset.en : h.dataset.de;
+      });
+      root.querySelectorAll('.cmd-code').forEach(c => { c.title = t('clickCopy'); });
+      root.querySelectorAll('.copy').forEach(b => {
+        b.title = t('copy');
+        b.setAttribute('aria-label', t('copy') + ': ' + (b.getAttribute('data-copy') || ''));
+      });
+    }
+
+    function applyUiLang(){
+      document.documentElement.lang = lang;
+      document.querySelectorAll('[data-i18n]').forEach(e => { e.textContent = t(e.dataset.i18n); });
+      document.querySelectorAll('[data-i18n-ph]').forEach(e => { e.placeholder = t(e.dataset.i18nPh); });
+      document.querySelectorAll('[data-i18n-aria]').forEach(e => { e.setAttribute('aria-label', t(e.dataset.i18nAria)); });
+      document.querySelectorAll('[data-i18n-title]').forEach(e => { e.title = t(e.dataset.i18nTitle); });
+      const other = lang === 'de' ? 'en' : 'de';
+      langBtn.innerHTML = FLAG[other] + '<span>' + t('langBtn') + '</span>';
+      langBtn.title = t('langTitle');
+      langBtn.setAttribute('aria-label', t('langTitle'));
+    }
+
+    const langBtn = document.getElementById('langBtn');
+    langBtn.addEventListener('click', () => {
+      lang = lang === 'de' ? 'en' : 'de';
+      try{ localStorage.setItem(LANG_KEY, lang); }catch{}
+      applyUiLang();
+      applyLang(document);
+      applyFilter();   // baut Seitenleiste mit neuen Namen neu
+    });
+
+    async function decryptMod(word){
+      const el = document.getElementById('modData');
+      if (!el || !window.crypto?.subtle) return null;
+      const blob = Uint8Array.from(atob(el.textContent.trim()), c => c.charCodeAt(0));
+      const salt = blob.slice(0, 16), iv = blob.slice(16, 28), data = blob.slice(28);
+      const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(word), 'PBKDF2', false, ['deriveKey']);
+      const key  = await crypto.subtle.deriveKey(
+        { name: 'PBKDF2', salt, iterations: 250000, hash: 'SHA-256' },
+        base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+      try{
+        return new TextDecoder().decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data));
+      }catch{
+        return null;  // falsches Wort
+      }
+    }
+
+    let unlocking = false;
+    async function unlockMods(word){
+      if (showMods || unlocking) return showMods;
+      unlocking = true;
+      try{
+        const html = await decryptMod(word);
+        if (html === null) return false;
+        const tpl = document.createElement('template');
+        tpl.innerHTML = html;
+        initContent(tpl.content);
+        empty.before(tpl.content);
+        refreshSections();
+        showMods = true;
+        modWord = word;
+        saveWord(word);
+        updateModTab();
+        return true;
+      }finally{
+        unlocking = false;
+      }
+    }
+
+    function lockMods(){
+      document.querySelectorAll('section[data-secret="1"]').forEach(sec => sec.remove());
+      refreshSections();
+      showMods = false;
+      modWord = '';
+      saveWord('');
+      updateModTab();
+      if (activeCat === 'mod') activeCat = 'core';
+      if (lastNonSearchCat === 'mod') lastNonSearchCat = 'core';
+      syncActiveButton();
+    }
+
+    // =====================
+    // INIT
+    // =====================
+    applyUiLang();
+    initContent(document);
     syncActiveButton();
     applyFilter();
+
+    (async () => {
+      // ?mod=0 sperrt, ?mod=<wort> entsperrt (Wort wird danach aus der URL entfernt)
+      const urlMod = (params.get('mod') || '').trim().toLowerCase();
+      if (urlMod){
+        params.delete('mod');
+        const rest = params.toString();
+        history.replaceState(null, '', location.pathname + (rest ? '?' + rest : '') + location.hash);
+      }
+      if (urlMod === '0'){ saveWord(''); return; }
+
+      const word = (urlMod && urlMod !== '1') ? urlMod : loadWord();
+      if (!word) return;
+      if (await unlockMods(word)){
+        if (wantModTab || (urlMod && urlMod !== '1')) activeCat = lastNonSearchCat = 'mod';
+        syncActiveButton();
+        applyFilter();
+      }else if (word === loadWord()){
+        saveWord('');  // gespeichertes Wort passt nicht mehr (z.B. geändert)
+      }
+    })();
   </script>
   <script>
   document.addEventListener("contextmenu", (e) => e.preventDefault());
